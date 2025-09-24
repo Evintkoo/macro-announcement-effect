@@ -1,0 +1,129 @@
+# Project Configuration
+project:
+  name: "Macro Announcement Effects on Crypto vs Stock Markets"
+  version: "1.0.0"
+  description: "Research project analyzing the effect of macroeconomic announcements on cryptocurrency vs U.S. stock market returns, volatility, and trading volume"
+
+# Data Sources Configuration
+data_sources:
+  # Free FRED data (optional API key for higher limits)
+  fred:
+    api_key: null  # Optional: Set in environment variables for higher rate limits
+    base_url: "https://fred.stlouisfed.org/graph/fredgraph.csv"
+    
+  # Free Yahoo Finance data
+  yahoo_finance:
+    base_url: "https://finance.yahoo.com"
+    
+  # Free CoinGecko API (rate limited without key)
+  coingecko:
+    base_url: "https://api.coingecko.com/api/v3"
+    api_key: null  # Optional: for higher rate limits
+    
+  # Free economic calendar sources
+  economic_calendar:
+    sources:
+      - "https://www.federalreserve.gov/newsevents/calendar.htm"
+      - "https://www.bls.gov/schedule/"
+      - "https://www.census.gov/economic-indicators/"
+      
+  # Cryptocurrency exchanges (free public APIs)
+  crypto:
+    exchanges:
+      - binance  # Free public API
+      - coinbase  # Free public API
+    symbols:
+      - BTC-USD
+      - ETH-USD
+      
+  # Stock market data (free via Yahoo Finance)
+  stocks:
+    symbols:
+      - "^GSPC"  # S&P 500
+      - "^VIX"   # VIX
+      - "^TNX"   # 10-Year Treasury
+      - "DX-Y.NYB"    # USD Index
+
+# Economic Indicators to Track
+economic_indicators:
+  monetary_policy:
+    - FOMC_meetings
+    - interest_rate_decisions
+    - QE_announcements
+    
+  employment:
+    - UNRATE        # Unemployment Rate
+    - PAYEMS        # Nonfarm Payrolls
+    - CIVPART       # Labor Force Participation Rate
+    
+  inflation:
+    - CPIAUCSL      # Consumer Price Index
+    - CPILFESL      # Core CPI
+    - PCEPI         # PCE Price Index
+    - PCEPILFE      # Core PCE
+    
+  gdp:
+    - GDP           # Gross Domestic Product
+    - GDPC1         # Real GDP
+    
+  other:
+    - VIXCLS        # VIX Close
+    - DGS10         # 10-Year Treasury Rate
+    - DEXUSEU       # USD/EUR Exchange Rate
+
+# Analysis Parameters
+analysis:
+  # Event study windows
+  event_windows:
+    intraday:
+      pre_minutes: 60
+      post_minutes: 60
+    daily:
+      pre_days: 1
+      post_days: 3
+      
+  # Return calculation
+  returns:
+    method: "log"  # log or simple
+    frequency: "1min"  # for intraday analysis
+    
+  # Volatility estimation
+  volatility:
+    method: "realized"  # realized, garch, etc.
+    annualization_factor: 252
+    
+  # Regression specifications
+  regressions:
+    controls:
+      - lagged_returns
+      - lagged_volatility
+      - vix
+      - treasury_yield
+      - usd_index
+    
+  # VAR model
+  var:
+    max_lags: 5
+    ic_criterion: "aic"  # aic, bic, hqic
+    
+# Statistical Tests
+statistics:
+  significance_level: 0.05
+  bootstrap_iterations: 1000
+  var_confidence_intervals: [0.05, 0.95]
+
+# Output Configuration
+output:
+  results_dir: "results"
+  figures_dir: "results/figures"
+  tables_dir: "results/tables"
+  models_dir: "results/models"
+  
+  figure_format: "png"
+  figure_dpi: 300
+  
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/research.log"

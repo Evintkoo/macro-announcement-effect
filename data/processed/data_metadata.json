@@ -1,0 +1,47 @@
+{
+  "processed_date": "2025-09-23T21:49:42.236661",
+  "data_shape": [
+    2462,
+    21
+  ],
+  "date_range": {
+    "start": "2021-09-24 00:00:00",
+    "end": "2025-09-22 04:00:00"
+  },
+  "columns": [
+    "^GSPC",
+    "^VIX",
+    "^TNX",
+    "DX-Y.NYB",
+    "BTC-USD_price",
+    "BTC-USD_volume",
+    "ETH-USD_price",
+    "ETH-USD_volume",
+    "BNB-USD_price",
+    "BNB-USD_volume",
+    "ADA-USD_price",
+    "ADA-USD_volume",
+    "SOL-USD_price",
+    "SOL-USD_volume",
+    "UNRATE",
+    "PAYEMS",
+    "CIVPART",
+    "CPIAUCSL",
+    "CPILFESL",
+    "PCEPI",
+    "PCEPILFE"
+  ],
+  "stock_columns": [
+    "^GSPC",
+    "^VIX",
+    "^TNX",
+    "DX-Y.NYB"
+  ],
+  "crypto_columns": [
+    "BTC-USD_price",
+    "BTC-USD_volume",
+    "ETH-USD_price",
+    "ETH-USD_volume"
+  ],
+  "economic_columns": []
+}
