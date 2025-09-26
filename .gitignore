@@ -182,3 +182,7 @@ cython_debug/
 
 # plan text files
 plan.md
+
+# Large processed datasets
+*.csv
+*.json

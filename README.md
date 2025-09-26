@@ -47,6 +47,10 @@ macro-announcement-effect/
 └── README.md                     # This file
 ```
 
+### 🗃️ Data Files
+
+CSV and JSON datasets are no longer tracked in the repository. Populate `data/raw/` with your own source files (for example exports from the collectors) and keep any derived files under `data/processed/`; both locations are automatically ignored by Git. If you need to version a lightweight sample dataset, compress it or convert it to a different format (e.g., `.parquet`) before committing.
+
 ## 🚀 Quick Start
 
 ### Option 1: Automated Setup (Recommended)
