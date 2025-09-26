@@ -186,3 +186,4 @@ plan.md
 # Large processed datasets
 *.csv
 *.json
+*.jpg
