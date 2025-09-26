@@ -168,24 +168,24 @@ def main():
         
         logger.info("Regression analysis completed")
         
-        # Step 6: Generate Results and Visualizations
-        logger.info("Step 6: Generating results and visualizations")
+        # Step 6: Generate tabular result exports
+        logger.info("Step 6: Generating tabular result exports")
         
         plot_generator = PlotGenerator()
         
-        # Generate summary plots
-        figures_dir = config.get_results_dir("figures")
-        
-        # Event study plots
-        plot_generator.plot_event_study_results(event_results, save_dir=figures_dir)
-        
-        # Regression results plots
-        plot_generator.plot_regression_results(regression_results, save_dir=figures_dir)
-        
-        # Summary statistics plots
+        # Export summary tables
+        tables_dir = config.get_results_dir("tables")
+
+        # Event study tables
+        plot_generator.plot_event_study_results(event_results, save_dir=tables_dir)
+
+        # Regression results tables
+        plot_generator.plot_regression_results(regression_results, save_dir=tables_dir)
+
+        # Summary statistics tables
         plot_generator.plot_summary_statistics(
             {'stocks': clean_stock_data, 'crypto': clean_crypto_data},
-            save_dir=figures_dir
+            save_dir=tables_dir
         )
         
         # Step 7: Save Results

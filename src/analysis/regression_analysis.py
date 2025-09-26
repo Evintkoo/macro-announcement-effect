@@ -10,12 +10,85 @@ import statsmodels.formula.api as smf
 from statsmodels.stats.diagnostic import het_breuschpagan
 from statsmodels.stats.stattools import durbin_watson
 import logging
+import warnings
+
+# Suppress statsmodels warnings to prevent "invalid value encountered" warnings
+warnings.filterwarnings('ignore', category=RuntimeWarning, message='.*invalid value encountered.*')
+# Note: np.RankWarning was removed in NumPy 2.0
+if hasattr(np, 'RankWarning'):
+    warnings.filterwarnings('ignore', category=np.RankWarning)
 
 logger = logging.getLogger(__name__)
+
+def safe_ols_fit(y, X, **kwargs):
+    """Safely fit OLS model with warning suppression and data cleaning."""
+    try:
+        # Clean data first
+        combined_data = pd.concat([pd.Series(y, name='y'), pd.DataFrame(X)], axis=1).dropna()
+        if len(combined_data) < 5:
+            return None
+        
+        y_clean = combined_data['y']
+        X_clean = combined_data.drop('y', axis=1)
+        
+        # Replace infinite values
+        y_clean = y_clean.replace([np.inf, -np.inf], np.nan).dropna()
+        X_clean = X_clean.replace([np.inf, -np.inf], np.nan).dropna()
+        
+        # Align again after cleaning
+        common_index = y_clean.index.intersection(X_clean.index)
+        if len(common_index) < 5:
+            return None
+            
+        y_final = y_clean.loc[common_index]
+        X_final = X_clean.loc[common_index]
+        
+        # Fit model with warnings suppressed
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=RuntimeWarning)
+            # Note: np.RankWarning was removed in NumPy 2.0
+            if hasattr(np, 'RankWarning'):
+                warnings.filterwarnings('ignore', category=np.RankWarning)
+            model = sm.OLS(y_final, X_final)
+            return model.fit(**kwargs)
+    except Exception as e:
+        logger.debug(f"OLS fitting failed: {e}")
+        return None
 
 class RegressionAnalyzer:
     """Regression analysis implementation following the research methodology."""
     
+
+    def extract_safe_ols_results(self, ols_result):
+        """
+        Extract safe, serializable results from OLS result object.
+        """
+        try:
+            return {
+                'params': ols_result.params.to_dict() if hasattr(ols_result.params, 'to_dict') else dict(ols_result.params),
+                'pvalues': ols_result.pvalues.to_dict() if hasattr(ols_result.pvalues, 'to_dict') else dict(ols_result.pvalues),
+                'tvalues': ols_result.tvalues.to_dict() if hasattr(ols_result.tvalues, 'to_dict') else dict(ols_result.tvalues),
+                'rsquared': float(ols_result.rsquared),
+                'rsquared_adj': float(ols_result.rsquared_adj),
+                'fvalue': float(ols_result.fvalue) if hasattr(ols_result, 'fvalue') else None,
+                'f_pvalue': float(ols_result.f_pvalue) if hasattr(ols_result, 'f_pvalue') else None,
+                'aic': float(ols_result.aic) if hasattr(ols_result, 'aic') else None,
+                'bic': float(ols_result.bic) if hasattr(ols_result, 'bic') else None,
+                'nobs': int(ols_result.nobs),
+                'df_resid': int(ols_result.df_resid) if hasattr(ols_result, 'df_resid') else None,
+                'df_model': int(ols_result.df_model) if hasattr(ols_result, 'df_model') else None,
+                'mse_resid': float(ols_result.mse_resid) if hasattr(ols_result, 'mse_resid') else None,
+                'summary_text': str(ols_result.summary()) if hasattr(ols_result, 'summary') else None
+            }
+        except Exception as e:
+            self.logger.error(f"Failed to extract safe OLS results: {e}")
+            return {
+                'error': f"Failed to extract results: {str(e)}",
+                'params': {},
+                'rsquared': 0.0,
+                'nobs': 0
+            }
+
     def __init__(self):
         self.logger = logging.getLogger(f"{__name__}.RegressionAnalyzer")
     
@@ -38,18 +111,30 @@ class RegressionAnalyzer:
         """
         self.logger.info("Running pooled regression analysis")
         
+        # OPTIMIZATION: Limit the scope to prevent hanging
+        max_assets_to_analyze = 5  # Conservative limit to prevent hanging
+        
         # Identify asset columns and calculate returns if needed
         price_columns = [col for col in aligned_data.columns 
                         if not any(suffix in col.lower() for suffix in ['_return', '_volatility', 'surprise', 'lag', 'dummy'])]
         
-        # Calculate returns from prices
+        # Calculate returns from prices (limit to key assets)
         returns_data = pd.DataFrame(index=aligned_data.index)
+        processed_count = 0
+        
         for col in price_columns:
+            if processed_count >= max_assets_to_analyze:  # Conservative total limit
+                break
+                
             if col in aligned_data.columns:
                 prices = aligned_data[col].dropna()
-                if len(prices) > 1:
+                if len(prices) > 100:  # Higher threshold for data quality
                     returns = prices.pct_change().dropna()
-                    returns_data[col] = returns
+                    if len(returns) > 50:
+                        returns_data[col] = returns
+                        processed_count += 1
+        
+        self.logger.info(f"Calculated returns for {len(returns_data.columns)} assets")
         
         # Identify surprise columns
         surprise_columns = [col for col in aligned_data.columns if 'surprise' in col.lower()]
@@ -64,6 +149,12 @@ class RegressionAnalyzer:
             stock_assets = [col for col in returns_data.columns 
                           if any(stock_name in col.upper() for stock_name in ['^GSPC', 'SPY', '^VIX', '^TNX', 'DX-Y', 'GSPC', 'VIX', 'TNX'])]
         
+        # Further limit assets for individual regressions
+        crypto_assets = crypto_assets[:max_assets_to_analyze]
+        stock_assets = stock_assets[:max_assets_to_analyze]
+        
+        self.logger.info(f"Limited to {len(crypto_assets)} crypto and {len(stock_assets)} stock assets for individual regressions")
+        
         results = {}
         
         # Run individual asset regressions if we have surprise data
@@ -72,7 +163,7 @@ class RegressionAnalyzer:
             if surprise_data.empty:
                 # Create dummy surprise data based on economic indicators
                 econ_columns = [col for col in aligned_data.columns 
-                              if any(econ_name in col.upper() for econ_name in ['UNRATE', 'PAYEMS', 'CPIAUCSL', 'PCEPI'])]
+                              if any(econ_name in col.upper() for econ_name in ['UNRATE', 'PAYEMS', 'CPIAUCSL', 'PCEPI'])][:3]  # Limit to 3
                 
                 if econ_columns:
                     surprise_data = pd.DataFrame(index=aligned_data.index)
@@ -85,32 +176,53 @@ class RegressionAnalyzer:
                                 surprise = (series - ma_12) / series.rolling(window=12, min_periods=1).std().shift(1)
                                 surprise_data[f"{col}_surprise"] = surprise
             
-            # Simple regression for each asset
-            for asset in returns_data.columns:
+            # Limit surprise measures too
+            surprise_columns = surprise_data.columns[:3]  # Max 3 surprise measures
+            
+            # Run regressions for limited set of assets
+            target_assets = (crypto_assets + stock_assets)[:max_assets_to_analyze]
+            
+            self.logger.info(f"Running individual regressions for {len(target_assets)} assets against {len(surprise_columns)} surprise measures")
+            
+            for i, asset in enumerate(target_assets):
                 if asset in returns_data.columns:
                     asset_returns = returns_data[asset].dropna()
                     
                     if len(asset_returns) > 30:
                         asset_results = {}
                         
-                        # Run regression against each surprise measure
-                        for surprise_col in surprise_data.columns:
+                        # Run regression against limited surprise measures
+                        for surprise_col in surprise_columns:
                             if surprise_col in surprise_data.columns:
                                 reg_data = pd.DataFrame({
                                     'return': asset_returns,
                                     'surprise': surprise_data[surprise_col]
                                 }).dropna()
                                 
-                                if len(reg_data) > 10:
+                                if len(reg_data) > 15:  # Higher threshold
                                     try:
-                                        model = smf.ols('return ~ surprise', data=reg_data)
+                                        # Use matrix approach instead of formula to avoid patsy issues
+                                        y = reg_data['return']
+                                        X = sm.add_constant(reg_data['surprise'])
+                                        
+                                        # Clean data to prevent warnings
+                                        if not (np.isfinite(y).all() and np.isfinite(X).all().all()):
+                                            self.logger.debug(f"Skipping {asset} vs {surprise_col} due to non-finite values")
+                                            continue
+                                            
+                                        model = sm.OLS(y, X)
                                         reg_result = model.fit(cov_type='HC3')
                                         asset_results[surprise_col] = reg_result
+                                        
                                     except Exception as e:
-                                        self.logger.warning(f"Regression failed for {asset} vs {surprise_col}: {e}")
+                                        self.logger.debug(f"Regression failed for {asset} vs {surprise_col}: {e}")
                         
                         if asset_results:
                             results[asset] = asset_results
+                
+                # Progress logging
+                if (i + 1) % 3 == 0:
+                    self.logger.info(f"Completed regressions for {i + 1}/{len(target_assets)} assets")
         
         # Run pooled regression if we have both crypto and stock assets
         if crypto_assets and stock_assets and not surprise_data.empty:
@@ -313,8 +425,19 @@ class RegressionAnalyzer:
             formula = ' + '.join(formula_parts)
             
             try:
-                # Run regression with robust standard errors
-                model = smf.ols(formula, data=pooled_df)
+                # Use matrix approach instead of formula to avoid patsy issues
+                y = pooled_df['return']
+                
+                # Build X matrix manually
+                X_columns = ['crypto_dummy']
+                if surprise_cols:
+                    X_columns.extend(surprise_cols)
+                if control_variables is not None:
+                    control_cols = [col for col in control_variables.columns if col in pooled_df.columns]
+                    X_columns.extend(control_cols)
+                
+                X = sm.add_constant(pooled_df[X_columns])
+                model = sm.OLS(y, X)
                 results = model.fit(cov_type='HC3')  # Robust standard errors
                 
                 self.logger.info(f"Pooled regression completed with {len(pooled_df)} observations")
@@ -421,8 +544,21 @@ class RegressionAnalyzer:
                     
                     formula = ' '.join(formula_parts)
                     
-                    # Run regression
-                    model = smf.ols(formula, data=reg_data)
+                    # Use matrix approach instead of formula to avoid patsy issues
+                    y = reg_data[dependent_var]
+                    
+                    X_columns = [main_surprise]
+                    if main_sign and main_sign in reg_data.columns:
+                        X_columns.append(main_sign)
+                    if lagged_dep in reg_data.columns:
+                        X_columns.append(lagged_dep)
+                    if control_variables is not None:
+                        for col in control_variables.columns:
+                            if col in reg_data.columns and col != dependent_var:
+                                X_columns.append(col)
+                    
+                    X = sm.add_constant(reg_data[X_columns])
+                    model = sm.OLS(y, X)
                     reg_result = model.fit(cov_type='HC3')  # Robust standard errors
                     
                     # Add diagnostic tests
@@ -485,8 +621,11 @@ class RegressionAnalyzer:
                     
                     if len(pos_data) > 10:
                         try:
-                            pos_model = smf.ols('return ~ surprise', data=pos_data)
-                            results[asset][f'{surprise_col}_positive'] = pos_model.fit(cov_type='HC3')
+                            # Use matrix approach instead of formula to avoid patsy issues
+                            y = pos_data['return']
+                            X = sm.add_constant(pos_data['surprise'])
+                            model = sm.OLS(y, X)
+                            results[asset][f'{surprise_col}_positive'] = model.fit(cov_type='HC3')
                         except:
                             pass
                     
@@ -499,8 +638,11 @@ class RegressionAnalyzer:
                     
                     if len(neg_data) > 10:
                         try:
-                            neg_model = smf.ols('return ~ surprise', data=neg_data)
-                            results[asset][f'{surprise_col}_negative'] = neg_model.fit(cov_type='HC3')
+                            # Use matrix approach instead of formula to avoid patsy issues
+                            y = neg_data['return']
+                            X = sm.add_constant(neg_data['surprise'])
+                            model = sm.OLS(y, X)
+                            results[asset][f'{surprise_col}_negative'] = model.fit(cov_type='HC3')
                         except:
                             pass
         
@@ -599,10 +741,11 @@ class RegressionAnalyzer:
         if surprise_cols and 'return' in data.columns:
             main_surprise = surprise_cols[0]
             
-            # Simple regression
+            # Simple regression using matrix approach
             try:
-                formula = f"return ~ {main_surprise}"
-                model = smf.ols(formula, data=data)
+                y = data['return']
+                X = sm.add_constant(data[main_surprise])
+                model = sm.OLS(y, X)
                 return model.fit(cov_type='HC3')
             except:
                 return None

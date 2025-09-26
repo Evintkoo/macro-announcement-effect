@@ -16,11 +16,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 class PlotGenerator:
-    """Generate visualizations for the analysis results."""
+    """Generate clean, non-overlapping visualizations for the analysis results."""
     
     def __init__(self, style: str = "seaborn-v0_8", figures_dir: str = "results/figures", tables_dir: str = "results/tables"):
         """
-        Initialize plot generator.
+        Initialize plot generator with improved formatting for clear visualizations.
         
         Args:
             style: Matplotlib style to use
@@ -45,23 +45,34 @@ class PlotGenerator:
         plt.style.use('default')  # Fallback to default if seaborn not available
         sns.set_palette("husl")
         
-        # Set default parameters
+        # Set default parameters for better text spacing and clarity
         plt.rcParams.update({
             'figure.figsize': (12, 8),
-            'font.size': 12,
-            'axes.titlesize': 14,
-            'axes.labelsize': 12,
-            'xtick.labelsize': 10,
-            'ytick.labelsize': 10,
+            'font.size': 11,
+            'axes.titlesize': 16,
+            'axes.labelsize': 13,
+            'xtick.labelsize': 11,
+            'ytick.labelsize': 11,
             'legend.fontsize': 11,
             'savefig.dpi': 300,
             'savefig.bbox': 'tight',
-            'savefig.format': 'png'
+            'savefig.format': 'png',
+            'figure.subplot.bottom': 0.15,  # More space for x-axis labels
+            'figure.subplot.left': 0.12,    # More space for y-axis labels
+            'figure.subplot.right': 0.85,   # More space for legends
+            'figure.subplot.top': 0.92,     # More space for titles
+            'axes.titlepad': 15,            # Padding below title
+            'axes.labelpad': 10,            # Padding for axis labels
+            'xtick.major.pad': 8,           # Padding for x-tick labels
+            'ytick.major.pad': 8,           # Padding for y-tick labels
+            'legend.borderpad': 0.5,        # Legend border padding
+            'legend.columnspacing': 1.0,    # Space between legend columns
+            'legend.handletextpad': 0.5     # Space between legend handle and text
         })
     
     def _save_plot(self, filename: str, subdir: str = None) -> str:
         """
-        Save the current plot to file.
+        Save the current plot to file with optimized settings to prevent text overlap.
         
         Args:
             filename: Name of the file (without extension)
@@ -77,11 +88,37 @@ class PlotGenerator:
             save_dir = self.figures_dir
         
         filepath = save_dir / f"{filename}.png"
-        plt.savefig(filepath)
+        
+        # Ensure tight layout before saving to prevent text overlap
+        plt.tight_layout(pad=2.0)  # Add extra padding
+        
+        # Save with high quality and bbox_inches='tight' to prevent clipping
+        plt.savefig(filepath, dpi=300, bbox_inches='tight', 
+                   facecolor='white', edgecolor='none')
         plt.close()  # Close the figure to free memory
         
-        self.logger.info(f"Plot saved: {filepath}")
+        self.logger.info(f"✓ Plot saved: {filepath}")
         return str(filepath)
+    
+    def _cleanup_old_combined_plots(self):
+        """Remove old combined plots that are no longer generated."""
+        old_combined_plots = [
+            "all_price_series_overview.png",
+            "cryptocurrency_prices_overview.png", 
+            "stock_market_indices_overview.png",
+            "economic_indicators_overview.png"
+        ]
+        
+        overview_dir = self.figures_dir / "overview"
+        if overview_dir.exists():
+            for old_plot in old_combined_plots:
+                old_plot_path = overview_dir / old_plot
+                if old_plot_path.exists():
+                    try:
+                        old_plot_path.unlink()
+                        self.logger.info(f"Removed old combined plot: {old_plot}")
+                    except Exception as e:
+                        self.logger.warning(f"Could not remove old plot {old_plot}: {e}")
     
     def _save_table(self, data: pd.DataFrame, filename: str, subdir: str = None) -> str:
         """
@@ -113,13 +150,13 @@ class PlotGenerator:
         save_dir: Path = None
     ) -> None:
         """
-        Generate overview plots of the aligned dataset.
+        Generate overview plots of the aligned dataset as separate, clean visualizations.
         
         Args:
             aligned_data: DataFrame with aligned data
             save_dir: Directory to save plots
         """
-        self.logger.info("Generating data overview plots")
+        self.logger.info("Generating clean data overview plots (one plot per image)")
         
         if aligned_data is None or aligned_data.empty:
             self.logger.warning("No data available for plotting")
@@ -142,32 +179,43 @@ class PlotGenerator:
         stock_columns = [col for col in price_columns 
                         if any(stock_name in col.upper() for stock_name in ['^GSPC', 'GSPC', '^VIX', 'VIX', '^TNX', 'TNX', 'DX-Y'])]
         
-        # Create overview plots
+        self.logger.info(f"Found {len(crypto_columns)} crypto assets, {len(stock_columns)} stock assets, {len(econ_columns)} economic indicators")
+        
+        # Create individual overview plots (no more subplots!)
+        self.logger.info("Creating data availability heatmap...")
         self._plot_data_availability(aligned_data, save_dir)
         
         if price_columns:
+            self.logger.info("Creating all price series plots...")
             self._plot_price_series_overview(aligned_data[price_columns], 'All Price Series', save_dir)
         
         if crypto_columns:
+            self.logger.info("Creating cryptocurrency-specific plots...")
             self._plot_price_series_overview(aligned_data[crypto_columns], 'Cryptocurrency Prices', save_dir)
             
         if stock_columns:
+            self.logger.info("Creating stock market-specific plots...")
             self._plot_price_series_overview(aligned_data[stock_columns], 'Stock Market Indices', save_dir)
             
         if econ_columns:
+            self.logger.info("Creating economic indicators plots...")
             self._plot_economic_indicators_overview(aligned_data[econ_columns], save_dir)
         
         # Summary statistics table
+        self.logger.info("Creating summary statistics table...")
         self._plot_summary_statistics_table(aligned_data, save_dir)
+        
+        self.logger.info(f"✓ All plots generated successfully in {self.figures_dir}")
+        
+        # Clean up any old combined plots
+        self._cleanup_old_combined_plots()
     
     def _plot_data_availability(
         self,
         data: pd.DataFrame,
         save_dir: Path = None
     ) -> None:
-        """Plot data availability heatmap."""
-        
-        fig, ax = plt.subplots(figsize=(15, 8))
+        """Plot data availability heatmap with improved formatting."""
         
         # Create availability matrix (1 for available, 0 for missing)
         availability = (~data.isnull()).astype(int)
@@ -177,22 +225,49 @@ class PlotGenerator:
         
         # Sample data if too many observations for plotting
         sampled_availability = availability
-        if len(availability) > 500:
+        if len(availability) > 1000:
             step = len(availability) // 500
             sampled_availability = availability.iloc[::step]
         
-        # Plot heatmap
-        sns.heatmap(sampled_availability.T, cbar_kws={'label': 'Data Available'}, 
-                   cmap='RdYlGn', ax=ax, xticklabels=50)
+        # Limit number of variables to show (select most complete ones)
+        if len(availability.columns) > 30:
+            completeness = availability.sum().sort_values(ascending=False)
+            top_vars = completeness.head(30).index
+            sampled_availability = sampled_availability[top_vars]
         
-        ax.set_title('Data Availability Over Time', fontsize=16)
-        ax.set_xlabel('Time')
-        ax.set_ylabel('Variables')
+        plt.figure(figsize=(16, 10))
+        
+        # Clean variable names for y-axis
+        clean_var_names = []
+        for var in sampled_availability.columns:
+            clean_name = var.replace('_price', '').replace('crypto_', '').replace('stocks_', '')
+            clean_name = clean_name.replace('economic_', 'Econ: ')
+            clean_name = clean_name.replace('BTC-USD', 'BTC').replace('ETH-USD', 'ETH')
+            clean_name = clean_name.replace('_', ' ').title()
+            if len(clean_name) > 20:
+                clean_name = clean_name[:17] + '...'
+            clean_var_names.append(clean_name)
+        
+        # Plot heatmap with better formatting
+        sns.heatmap(sampled_availability.T, 
+                   cbar_kws={'label': 'Data Available', 'shrink': 0.8}, 
+                   cmap='RdYlGn', 
+                   xticklabels=50,  # Show every 50th time label
+                   yticklabels=clean_var_names,
+                   cbar=True)
+        
+        plt.title('Data Availability Over Time', fontsize=18, fontweight='bold', pad=20)
+        plt.xlabel('Time Period', fontsize=14)
+        plt.ylabel('Variables', fontsize=14)
+        
+        # Improve tick labels
+        plt.xticks(fontsize=10)
+        plt.yticks(fontsize=10, rotation=0)
         
         plt.tight_layout()
         
         # Save plot
-        filename = "data_availability"
+        filename = "data_availability_heatmap"
         self._save_plot(filename, "overview")
     
     def _plot_price_series_overview(
@@ -201,7 +276,7 @@ class PlotGenerator:
         title: str,
         save_dir: Path = None
     ) -> None:
-        """Plot overview of price series."""
+        """Plot overview of price series as separate plots."""
         
         if price_data is None or price_data.empty:
             self.logger.warning(f"No data available for {title}")
@@ -225,22 +300,40 @@ class PlotGenerator:
         clean_title = title.lower().replace(' ', '_')
         self._save_table(valid_data, f"{clean_title}_raw_prices", "overview")
         
-        fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle(f'{title} Overview', fontsize=16)
+        # Helper function to clean asset names
+        def clean_asset_name(name):
+            replacements = {
+                'BTC-USD_price': 'BTC',
+                'ETH-USD_price': 'ETH',
+                'BNB-USD_price': 'BNB',
+                'ADA-USD_price': 'ADA',
+                'SOL-USD_price': 'SOL',
+                '^GSPC': 'S&P500',
+                'DX-Y.NYB': 'USD Index',
+                '^VIX': 'VIX',
+                '^TNX': '10Y Treasury'
+            }
+            for old, new in replacements.items():
+                name = name.replace(old, new)
+            return name
         
-        # Raw prices
+        # 1. Raw Prices Plot
+        plt.figure(figsize=(14, 8))
         for col in valid_columns:
             clean_series = valid_data[col].dropna()
             if len(clean_series) > 10:  # Only plot if enough data
-                axes[0, 0].plot(clean_series.index, clean_series.values, 
-                               label=col.replace('BTC-USD_price', 'BTC').replace('ETH-USD_price', 'ETH')
-                                    .replace('^GSPC', 'S&P500').replace('DX-Y.NYB', 'USD'), alpha=0.8)
-        axes[0, 0].set_title('Price Levels')
-        axes[0, 0].set_ylabel('Price')
-        axes[0, 0].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-        axes[0, 0].grid(True, alpha=0.3)
+                plt.plot(clean_series.index, clean_series.values, 
+                        label=clean_asset_name(col), alpha=0.8, linewidth=2)
         
-        # Normalized prices (base = 100) - use first available value for each series
+        plt.title(f'{title} - Price Levels', fontsize=16, fontweight='bold')
+        plt.xlabel('Date', fontsize=12)
+        plt.ylabel('Price', fontsize=12)
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        self._save_plot(f"{clean_title}_raw_prices", "overview")
+        
+        # 2. Normalized Prices Plot (base = 100)
         normalized_data = pd.DataFrame(index=valid_data.index)
         for col in valid_columns:
             series = valid_data[col].dropna()
@@ -251,75 +344,90 @@ class PlotGenerator:
         if not normalized_data.empty:
             self._save_table(normalized_data, f"{clean_title}_normalized_prices", "overview")
             
+            plt.figure(figsize=(14, 8))
             for col in normalized_data.columns:
                 clean_series = normalized_data[col].dropna()
                 if len(clean_series) > 10:
-                    axes[0, 1].plot(clean_series.index, clean_series.values, 
-                                   label=col.replace('BTC-USD_price', 'BTC').replace('ETH-USD_price', 'ETH')
-                                        .replace('^GSPC', 'S&P500').replace('DX-Y.NYB', 'USD'), alpha=0.8)
-        axes[0, 1].set_title('Normalized Prices (Base = 100)')
-        axes[0, 1].set_ylabel('Normalized Price')
-        axes[0, 1].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-        axes[0, 1].grid(True, alpha=0.3)
+                    plt.plot(clean_series.index, clean_series.values, 
+                            label=clean_asset_name(col), alpha=0.8, linewidth=2)
+            
+            plt.title(f'{title} - Normalized Prices (Base = 100)', fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('Normalized Price', fontsize=12)
+            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            self._save_plot(f"{clean_title}_normalized_prices", "overview")
         
-        # Returns - calculate for each valid column
-        returns_data = pd.DataFrame(index=valid_data.index)
+        # 3. Daily Returns Plot
+        returns_dict = {}
         for col in valid_columns:
             series = valid_data[col].dropna()
             if len(series) > 10:
                 returns = series.pct_change().dropna()
                 # Remove extreme outliers (>20% daily change - likely data errors)
                 returns = returns[np.abs(returns) < 0.20]
-                returns_data[col] = returns
+                returns_dict[col] = returns
+        
+        # Create DataFrame from dictionary to avoid fragmentation
+        returns_data = pd.DataFrame(returns_dict, index=valid_data.index)
         
         if not returns_data.empty:
             self._save_table(returns_data, f"{clean_title}_daily_returns", "overview")
             
+            plt.figure(figsize=(14, 8))
             for col in returns_data.columns:
                 clean_series = returns_data[col].dropna()
                 if len(clean_series) > 10:
-                    axes[1, 0].plot(clean_series.index, clean_series.values * 100, 
-                                   label=col.replace('BTC-USD_price', 'BTC').replace('ETH-USD_price', 'ETH')
-                                        .replace('^GSPC', 'S&P500').replace('DX-Y.NYB', 'USD'), alpha=0.7)
-        axes[1, 0].set_title('Daily Returns (%)')
-        axes[1, 0].set_ylabel('Return (%)')
-        axes[1, 0].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-        axes[1, 0].grid(True, alpha=0.3)
+                    plt.plot(clean_series.index, clean_series.values * 100, 
+                            label=clean_asset_name(col), alpha=0.7, linewidth=1.5)
+            
+            plt.title(f'{title} - Daily Returns (%)', fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('Return (%)', fontsize=12)
+            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            self._save_plot(f"{clean_title}_daily_returns", "overview")
         
-        # Rolling volatility
-        rolling_vol_data = pd.DataFrame(index=returns_data.index)
+        # 4. Rolling Volatility Plot
+        rolling_vol_series = {}
         for col in returns_data.columns:
             clean_series = returns_data[col].dropna()
             if len(clean_series) > 30:  # Need at least 30 observations for rolling window
                 rolling_vol = clean_series.rolling(window=30).std() * np.sqrt(252) * 100
-                rolling_vol_data[col] = rolling_vol
+                rolling_vol_series[col] = rolling_vol
+        
+        # Concatenate all series at once to avoid fragmentation
+        if rolling_vol_series:
+            rolling_vol_data = pd.concat(rolling_vol_series, axis=1)
+        else:
+            rolling_vol_data = pd.DataFrame()
         
         if not rolling_vol_data.empty:
             self._save_table(rolling_vol_data, f"{clean_title}_rolling_volatility", "overview")
             
+            plt.figure(figsize=(14, 8))
             for col in rolling_vol_data.columns:
                 clean_series = rolling_vol_data[col].dropna()
                 if len(clean_series) > 10:
-                    axes[1, 1].plot(clean_series.index, clean_series.values, 
-                                   label=col.replace('BTC-USD_price', 'BTC').replace('ETH-USD_price', 'ETH')
-                                        .replace('^GSPC', 'S&P500').replace('DX-Y.NYB', 'USD'), alpha=0.8)
-        axes[1, 1].set_title('30-Day Rolling Volatility (Annualized %)')
-        axes[1, 1].set_ylabel('Volatility (%)')
-        axes[1, 1].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-        axes[1, 1].grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        
-        # Save plot
-        filename = f"{clean_title}_overview"
-        self._save_plot(filename, "overview")
+                    plt.plot(clean_series.index, clean_series.values, 
+                            label=clean_asset_name(col), alpha=0.8, linewidth=2)
+            
+            plt.title(f'{title} - 30-Day Rolling Volatility (Annualized %)', fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('Volatility (%)', fontsize=12)
+            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            self._save_plot(f"{clean_title}_rolling_volatility", "overview")
     
     def _plot_economic_indicators_overview(
         self,
         econ_data: pd.DataFrame,
         save_dir: Path = None
     ) -> None:
-        """Plot overview of economic indicators."""
+        """Plot overview of economic indicators as separate plots."""
         
         if econ_data.empty:
             return
@@ -327,54 +435,43 @@ class PlotGenerator:
         # Save economic indicators data
         self._save_table(econ_data, "economic_indicators_raw", "overview")
         
-        n_indicators = len(econ_data.columns)
-        cols = min(3, n_indicators)
-        rows = (n_indicators + cols - 1) // cols
-        
-        fig, axes = plt.subplots(rows, cols, figsize=(5*cols, 4*rows))
-        if n_indicators == 1:
-            axes = [axes]
-        elif rows == 1:
-            axes = [axes]
-        else:
-            axes = axes.flatten()
-        
-        fig.suptitle('Economic Indicators Overview', fontsize=16)
-        
-        for i, col in enumerate(econ_data.columns):
-            if i < len(axes):
-                ax = axes[i]
+        # Create individual plots for each economic indicator
+        for col in econ_data.columns:
+            data_series = econ_data[col].dropna()
+            
+            if len(data_series) > 0:
+                plt.figure(figsize=(12, 6))
                 
-                data_series = econ_data[col].dropna()
-                ax.plot(data_series.index, data_series, linewidth=2, color='darkblue')
-                ax.set_title(col)
-                ax.set_ylabel('Value')
-                ax.grid(True, alpha=0.3)
+                # Main data plot
+                plt.plot(data_series.index, data_series, linewidth=2.5, color='darkblue', 
+                        label=col.replace('_', ' ').title())
                 
-                # Add trend line
+                # Add trend line if enough data
                 if len(data_series) > 10:
                     z = np.polyfit(range(len(data_series)), data_series.values, 1)
                     p = np.poly1d(z)
-                    ax.plot(data_series.index, p(range(len(data_series))), 
-                           "r--", alpha=0.6, label='Trend')
-                    ax.legend()
-        
-        # Hide unused subplots
-        for i in range(n_indicators, len(axes)):
-            axes[i].set_visible(False)
-        
-        plt.tight_layout()
-        
-        # Save plot
-        filename = "economic_indicators_overview"
-        self._save_plot(filename, "overview")
+                    plt.plot(data_series.index, p(range(len(data_series))), 
+                           "r--", alpha=0.7, linewidth=2, label='Trend')
+                
+                # Formatting
+                clean_title = col.replace('_', ' ').replace('economic ', '').title()
+                plt.title(f'Economic Indicator: {clean_title}', fontsize=16, fontweight='bold')
+                plt.xlabel('Date', fontsize=12)
+                plt.ylabel('Value', fontsize=12)
+                plt.legend(fontsize=11)
+                plt.grid(True, alpha=0.3)
+                plt.tight_layout()
+                
+                # Save individual plot
+                clean_filename = col.lower().replace(' ', '_').replace('economic_', '')
+                self._save_plot(f"economic_indicator_{clean_filename}", "overview")
     
     def _plot_summary_statistics_table(
         self,
         data: pd.DataFrame,
         save_dir: Path = None
     ) -> None:
-        """Create and plot summary statistics table."""
+        """Create and plot summary statistics table with improved formatting."""
         
         # Calculate summary statistics
         summary_stats = data.describe()
@@ -385,33 +482,68 @@ class PlotGenerator:
         # Save table data as CSV
         self._save_table(key_stats, "summary_statistics", "overview")
         
-        # Create plot
-        fig, ax = plt.subplots(figsize=(12, 8))
+        # Limit number of columns to prevent overcrowding
+        max_cols = 10  # Maximum columns to display
+        if len(key_stats.columns) > max_cols:
+            # Select most relevant columns (those with most data)
+            data_completeness = data.notna().sum().sort_values(ascending=False)
+            selected_cols = data_completeness.head(max_cols).index.tolist()
+            key_stats = key_stats[selected_cols]
+        
+        # Create plot with better sizing
+        fig, ax = plt.subplots(figsize=(16, 6))
         ax.axis('tight')
         ax.axis('off')
         
-        # Create table
+        # Prepare data for table
         table_data = key_stats.round(4)
-        table = ax.table(cellText=table_data.values,
-                        rowLabels=table_data.index,
-                        colLabels=[col[:15] + '...' if len(col) > 15 else col for col in table_data.columns],
+        
+        # Truncate column names for better display
+        col_labels = []
+        for col in table_data.columns:
+            if len(col) > 20:
+                # Clean up column names
+                clean_col = col.replace('_price', '').replace('crypto_', '').replace('stocks_', '')
+                clean_col = clean_col.replace('BTC-USD', 'BTC').replace('ETH-USD', 'ETH')
+                if len(clean_col) > 15:
+                    clean_col = clean_col[:12] + '...'
+                col_labels.append(clean_col)
+            else:
+                col_labels.append(col.replace('_', ' ').title())
+        
+        # Create table with improved styling
+        table = ax.table(cellText=table_data.values.T,  # Transpose for better layout
+                        rowLabels=col_labels,
+                        colLabels=['Count', 'Mean', 'Std Dev', 'Min', 'Max'],
                         cellLoc='center',
                         loc='center')
         
         table.auto_set_font_size(False)
-        table.set_fontsize(9)
-        table.scale(1.2, 1.5)
+        table.set_fontsize(10)
+        table.scale(1.0, 2.0)  # Increase row height
         
-        # Style the table
-        for i in range(len(table_data.columns)):
-            table[(0, i)].set_facecolor('#40466e')
-            table[(0, i)].set_text_props(weight='bold', color='white')
+        # Style the header row
+        for j in range(len(['Count', 'Mean', 'Std Dev', 'Min', 'Max'])):
+            table[(0, j)].set_facecolor('#2E4A62')
+            table[(0, j)].set_text_props(weight='bold', color='white')
+            table[(0, j)].set_height(0.08)
         
-        for i in range(len(table_data.index)):
-            table[(i+1, -1)].set_facecolor('#f1f1f2')
-            table[(i+1, -1)].set_text_props(weight='bold')
+        # Style the row labels (asset names)
+        for i in range(1, len(col_labels) + 1):
+            table[(i, -1)].set_facecolor('#E8F4FD')
+            table[(i, -1)].set_text_props(weight='bold')
+            table[(i, -1)].set_height(0.06)
         
-        ax.set_title('Summary Statistics', fontsize=16, fontweight='bold', pad=20)
+        # Alternate row colors for data cells
+        for i in range(1, len(col_labels) + 1):
+            for j in range(len(['Count', 'Mean', 'Std Dev', 'Min', 'Max'])):
+                if i % 2 == 0:
+                    table[(i, j)].set_facecolor('#F8F9FA')
+                else:
+                    table[(i, j)].set_facecolor('white')
+                table[(i, j)].set_height(0.06)
+        
+        ax.set_title('Summary Statistics - Key Variables', fontsize=18, fontweight='bold', pad=30)
         
         plt.tight_layout()
         
@@ -463,7 +595,7 @@ class PlotGenerator:
         average_cars: pd.DataFrame,
         save_dir: Path = None
     ) -> None:
-        """Plot average cumulative abnormal returns."""
+        """Plot average cumulative abnormal returns as separate plots."""
         
         if average_cars is None or average_cars.empty:
             self.logger.warning("No average CARs data to plot")
@@ -472,8 +604,22 @@ class PlotGenerator:
         # Save CARs data as CSV
         self._save_table(average_cars, "average_cumulative_abnormal_returns", "event_study")
         
-        fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-        fig.suptitle('Average Cumulative Abnormal Returns Around Announcements', fontsize=16)
+        # Helper function to clean asset names
+        def clean_asset_name(name):
+            replacements = {
+                'BTC-USD_price': 'BTC',
+                'ETH-USD_price': 'ETH',
+                'BNB-USD_price': 'BNB',
+                'ADA-USD_price': 'ADA',
+                'SOL-USD_price': 'SOL',
+                '^GSPC': 'S&P500',
+                'DX-Y.NYB': 'USD Index',
+                '^VIX': 'VIX',
+                '^TNX': '10Y Treasury'
+            }
+            for old, new in replacements.items():
+                name = name.replace(old, new)
+            return name
         
         # Identify asset types more flexibly
         crypto_cols = [col for col in average_cars.columns if any(crypto in col.upper() for crypto in ['BTC', 'ETH', 'BNB', 'ADA', 'SOL'])]
@@ -485,115 +631,120 @@ class PlotGenerator:
             crypto_cols = all_cols[:len(all_cols)//2]  # First half as "crypto"
             stock_cols = all_cols[len(all_cols)//2:]   # Second half as "stocks"
         
-        # Plot crypto CARs
+        # 1. Cryptocurrency CARs Plot
         if crypto_cols:
+            plt.figure(figsize=(12, 8))
             for col in crypto_cols:
                 clean_data = average_cars[col].dropna()
                 if not clean_data.empty:
-                    axes[0, 0].plot(clean_data.index, clean_data.values, 
-                                   label=col.replace('BTC-USD_price', 'BTC').replace('ETH-USD_price', 'ETH')
-                                       .replace('BNB-USD_price', 'BNB').replace('ADA-USD_price', 'ADA')
-                                       .replace('SOL-USD_price', 'SOL'), linewidth=2)
-            axes[0, 0].set_title('Cryptocurrency CARs')
-            axes[0, 0].set_xlabel('Days from Announcement')
-            axes[0, 0].set_ylabel('Cumulative Abnormal Return')
-            axes[0, 0].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-            axes[0, 0].axvline(x=0, color='red', linestyle='-', alpha=0.7, label='Announcement')
-            axes[0, 0].legend()
-            axes[0, 0].grid(True, alpha=0.3)
-        else:
-            axes[0, 0].text(0.5, 0.5, 'No cryptocurrency data available', 
-                           ha='center', va='center', transform=axes[0, 0].transAxes)
+                    plt.plot(clean_data.index, clean_data.values, 
+                           label=clean_asset_name(col), linewidth=2.5, alpha=0.8)
+            
+            plt.title('Cryptocurrency Cumulative Abnormal Returns', fontsize=16, fontweight='bold')
+            plt.xlabel('Days from Announcement', fontsize=12)
+            plt.ylabel('Cumulative Abnormal Return', fontsize=12)
+            plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+            plt.axvline(x=0, color='red', linestyle='-', alpha=0.8, linewidth=2, label='Announcement')
+            plt.legend(fontsize=11)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            self._save_plot("crypto_cumulative_abnormal_returns", "event_study")
         
-        # Plot stock CARs
+        # 2. Stock Market CARs Plot
         if stock_cols:
+            plt.figure(figsize=(12, 8))
             for col in stock_cols:
                 clean_data = average_cars[col].dropna()
                 if not clean_data.empty:
-                    axes[0, 1].plot(clean_data.index, clean_data.values, 
-                                   label=col.replace('^GSPC', 'S&P500').replace('^VIX', 'VIX')
-                                       .replace('^TNX', '10Y Treasury').replace('DX-Y.NYB', 'USD Index'), linewidth=2)
-            axes[0, 1].set_title('Stock Market CARs')
-            axes[0, 1].set_xlabel('Days from Announcement')
-            axes[0, 1].set_ylabel('Cumulative Abnormal Return')
-            axes[0, 1].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-            axes[0, 1].axvline(x=0, color='red', linestyle='-', alpha=0.7, label='Announcement')
-            axes[0, 1].legend()
-            axes[0, 1].grid(True, alpha=0.3)
-        else:
-            axes[0, 1].text(0.5, 0.5, 'No stock market data available', 
-                           ha='center', va='center', transform=axes[0, 1].transAxes)
+                    plt.plot(clean_data.index, clean_data.values, 
+                           label=clean_asset_name(col), linewidth=2.5, alpha=0.8)
+            
+            plt.title('Stock Market Cumulative Abnormal Returns', fontsize=16, fontweight='bold')
+            plt.xlabel('Days from Announcement', fontsize=12)
+            plt.ylabel('Cumulative Abnormal Return', fontsize=12)
+            plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+            plt.axvline(x=0, color='red', linestyle='-', alpha=0.8, linewidth=2, label='Announcement')
+            plt.legend(fontsize=11)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            self._save_plot("stock_cumulative_abnormal_returns", "event_study")
         
-        # Comparison plot
+        # 3. Comparison Plot (Crypto vs Stock Averages)
         if crypto_cols and stock_cols:
+            plt.figure(figsize=(12, 8))
+            
             # Average across crypto and stocks (only non-null values)
             crypto_avg = average_cars[crypto_cols].mean(axis=1, skipna=True)
             stock_avg = average_cars[stock_cols].mean(axis=1, skipna=True)
             
             if not crypto_avg.empty:
-                axes[1, 0].plot(crypto_avg.index, crypto_avg.values, 
-                               label='Cryptocurrency Average', linewidth=3, color='orange')
+                plt.plot(crypto_avg.index, crypto_avg.values, 
+                        label='Cryptocurrency Average', linewidth=3, color='orange', alpha=0.9)
             if not stock_avg.empty:
-                axes[1, 0].plot(stock_avg.index, stock_avg.values, 
-                               label='Stock Market Average', linewidth=3, color='blue')
-            axes[1, 0].set_title('Crypto vs Stock Market Comparison')
-            axes[1, 0].set_xlabel('Days from Announcement')
-            axes[1, 0].set_ylabel('Average Cumulative Abnormal Return')
-            axes[1, 0].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-            axes[1, 0].axvline(x=0, color='red', linestyle='-', alpha=0.7, label='Announcement')
-            axes[1, 0].legend()
-            axes[1, 0].grid(True, alpha=0.3)
-        else:
-            # Plot all assets together if no clear separation
-            for col in average_cars.columns:
-                clean_data = average_cars[col].dropna()
-                if not clean_data.empty:
-                    axes[1, 0].plot(clean_data.index, clean_data.values, label=col[:15], linewidth=2)
-            axes[1, 0].set_title('All Assets CARs')
-            axes[1, 0].set_xlabel('Days from Announcement')
-            axes[1, 0].set_ylabel('Cumulative Abnormal Return')
-            axes[1, 0].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-            axes[1, 0].axvline(x=0, color='red', linestyle='-', alpha=0.7, label='Announcement')
-            axes[1, 0].legend()
-            axes[1, 0].grid(True, alpha=0.3)
+                plt.plot(stock_avg.index, stock_avg.values, 
+                        label='Stock Market Average', linewidth=3, color='blue', alpha=0.9)
+            
+            plt.title('Crypto vs Stock Market CARs Comparison', fontsize=16, fontweight='bold')
+            plt.xlabel('Days from Announcement', fontsize=12)
+            plt.ylabel('Average Cumulative Abnormal Return', fontsize=12)
+            plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+            plt.axvline(x=0, color='red', linestyle='-', alpha=0.8, linewidth=2, label='Announcement')
+            plt.legend(fontsize=12)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            self._save_plot("crypto_vs_stock_cars_comparison", "event_study")
         
-        # Distribution of final CARs
+        # 4. Final CARs Distribution Plot
         if len(average_cars) > 0:
             final_cars = average_cars.iloc[-1].dropna()
             if not final_cars.empty:
-                axes[1, 1].bar(range(len(final_cars)), final_cars.values)
-                axes[1, 1].set_title('Final CARs by Asset')
-                axes[1, 1].set_xlabel('Assets')
-                axes[1, 1].set_ylabel('Final CAR')
-                axes[1, 1].set_xticks(range(len(final_cars)))
-                # Clean up labels
+                plt.figure(figsize=(12, 8))
+                
+                # Create colors based on asset type
+                colors = []
                 labels = []
                 for col in final_cars.index:
-                    if 'BTC' in col:
-                        labels.append('BTC')
-                    elif 'ETH' in col:
-                        labels.append('ETH')
-                    elif 'GSPC' in col:
-                        labels.append('S&P500')
-                    elif 'DX-Y' in col:
-                        labels.append('USD')
+                    clean_name = clean_asset_name(col)
+                    labels.append(clean_name)
+                    if any(crypto in col.upper() for crypto in ['BTC', 'ETH', 'BNB', 'ADA', 'SOL']):
+                        colors.append('orange')
                     else:
-                        labels.append(col[:8])
-                axes[1, 1].set_xticklabels(labels, rotation=45)
-                axes[1, 1].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-                axes[1, 1].grid(True, alpha=0.3)
-            else:
-                axes[1, 1].text(0.5, 0.5, 'No final CAR data available', 
-                               ha='center', va='center', transform=axes[1, 1].transAxes)
-        else:
-            axes[1, 1].text(0.5, 0.5, 'No CAR data available', 
-                           ha='center', va='center', transform=axes[1, 1].transAxes)
+                        colors.append('steelblue')
+                
+                bars = plt.bar(range(len(final_cars)), final_cars.values, color=colors, alpha=0.7)
+                plt.title('Final Cumulative Abnormal Returns by Asset', fontsize=16, fontweight='bold')
+                plt.xlabel('Assets', fontsize=12)
+                plt.ylabel('Final CAR', fontsize=12)
+                plt.xticks(range(len(final_cars)), labels, rotation=45, ha='right')
+                plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+                plt.grid(True, alpha=0.3, axis='y')
+                
+                # Add value labels on bars
+                for bar, value in zip(bars, final_cars.values):
+                    height = bar.get_height()
+                    plt.text(bar.get_x() + bar.get_width()/2., height + (0.01 if height >= 0 else -0.01),
+                            f'{value:.3f}', ha='center', va='bottom' if height >= 0 else 'top', fontsize=10)
+                
+                plt.tight_layout()
+                self._save_plot("final_cars_by_asset", "event_study")
         
+        # 5. All Assets CARs (overview plot)
+        plt.figure(figsize=(14, 8))
+        for col in average_cars.columns:
+            clean_data = average_cars[col].dropna()
+            if not clean_data.empty:
+                plt.plot(clean_data.index, clean_data.values, 
+                        label=clean_asset_name(col), linewidth=2, alpha=0.7)
+        
+        plt.title('All Assets - Average Cumulative Abnormal Returns', fontsize=16, fontweight='bold')
+        plt.xlabel('Days from Announcement', fontsize=12)
+        plt.ylabel('Cumulative Abnormal Return', fontsize=12)
+        plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+        plt.axvline(x=0, color='red', linestyle='-', alpha=0.8, linewidth=2, label='Announcement')
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+        plt.grid(True, alpha=0.3)
         plt.tight_layout()
-        
-        # Save plot
-        filename = "average_cumulative_abnormal_returns"
-        self._save_plot(filename, "event_study")
+        self._save_plot("all_assets_cumulative_abnormal_returns", "event_study")
     
     def _plot_individual_cars(
         self,
@@ -661,7 +812,7 @@ class PlotGenerator:
         summary_stats: Dict[str, Dict[str, float]],
         save_dir: Path = None
     ) -> None:
-        """Plot event study summary statistics."""
+        """Plot event study summary statistics as separate plots."""
         
         if not summary_stats:
             return
@@ -675,77 +826,113 @@ class PlotGenerator:
         # Save summary statistics as CSV
         self._save_table(stats_df, "event_study_summary_statistics", "event_study")
         
-        fig, axes = plt.subplots(2, 2, figsize=(15, 10))
-        fig.suptitle('Event Study Summary Statistics', fontsize=16)
+        assets = stats_df.index
+        colors = ['orange' if 'crypto' in asset.lower() else 'steelblue' for asset in assets]
         
-        # Mean CARs
+        # Helper function to clean asset names
+        def clean_asset_labels(assets):
+            return [asset.replace('crypto_', '').replace('stock_', '').replace('_', ' ').title()[:15] 
+                   for asset in assets]
+        
+        clean_labels = clean_asset_labels(assets)
+        
+        # 1. Mean CARs Plot
         if 'mean_car' in stats_df.columns:
-            assets = stats_df.index
+            plt.figure(figsize=(12, 8))
             mean_cars = stats_df['mean_car']
-            colors = ['orange' if 'crypto' in asset.lower() else 'blue' for asset in assets]
             
-            axes[0, 0].bar(range(len(mean_cars)), mean_cars, color=colors)
-            axes[0, 0].set_title('Mean Cumulative Abnormal Returns')
-            axes[0, 0].set_ylabel('Mean CAR')
-            axes[0, 0].set_xticks(range(len(assets)))
-            axes[0, 0].set_xticklabels([asset.replace('crypto_', 'C-').replace('stock_', 'S-') 
-                                       for asset in assets], rotation=45)
-            axes[0, 0].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-            axes[0, 0].grid(True, alpha=0.3)
+            bars = plt.bar(range(len(mean_cars)), mean_cars, color=colors, alpha=0.7)
+            plt.title('Mean Cumulative Abnormal Returns by Asset', fontsize=16, fontweight='bold')
+            plt.xlabel('Assets', fontsize=12)
+            plt.ylabel('Mean CAR', fontsize=12)
+            plt.xticks(range(len(assets)), clean_labels, rotation=45, ha='right')
+            plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+            plt.grid(True, alpha=0.3, axis='y')
+            
+            # Add value labels on bars
+            for bar, value in zip(bars, mean_cars):
+                height = bar.get_height()
+                plt.text(bar.get_x() + bar.get_width()/2., height + (0.001 if height >= 0 else -0.001),
+                        f'{value:.3f}', ha='center', va='bottom' if height >= 0 else 'top', fontsize=10)
+            
+            plt.tight_layout()
+            self._save_plot("mean_cars_by_asset", "event_study")
         
-        # Standard deviations
+        # 2. Standard Deviations Plot
         if 'std_car' in stats_df.columns:
+            plt.figure(figsize=(12, 8))
             std_cars = stats_df['std_car']
-            axes[0, 1].bar(range(len(std_cars)), std_cars, color=colors)
-            axes[0, 1].set_title('Standard Deviation of CARs')
-            axes[0, 1].set_ylabel('Std Dev')
-            axes[0, 1].set_xticks(range(len(assets)))
-            axes[0, 1].set_xticklabels([asset.replace('crypto_', 'C-').replace('stock_', 'S-') 
-                                       for asset in assets], rotation=45)
-            axes[0, 1].grid(True, alpha=0.3)
+            
+            bars = plt.bar(range(len(std_cars)), std_cars, color=colors, alpha=0.7)
+            plt.title('Standard Deviation of CARs by Asset', fontsize=16, fontweight='bold')
+            plt.xlabel('Assets', fontsize=12)
+            plt.ylabel('Standard Deviation', fontsize=12)
+            plt.xticks(range(len(assets)), clean_labels, rotation=45, ha='right')
+            plt.grid(True, alpha=0.3, axis='y')
+            
+            # Add value labels on bars
+            for bar, value in zip(bars, std_cars):
+                height = bar.get_height()
+                plt.text(bar.get_x() + bar.get_width()/2., height + height * 0.01,
+                        f'{value:.3f}', ha='center', va='bottom', fontsize=10)
+            
+            plt.tight_layout()
+            self._save_plot("car_volatility_by_asset", "event_study")
         
-        # Positive vs negative events
+        # 3. Positive vs Negative Events Plot
         if 'positive_events' in stats_df.columns and 'negative_events' in stats_df.columns:
+            plt.figure(figsize=(12, 8))
             pos_events = stats_df['positive_events']
             neg_events = stats_df['negative_events']
             
             x = np.arange(len(assets))
             width = 0.35
             
-            axes[1, 0].bar(x - width/2, pos_events, width, label='Positive', color='green', alpha=0.7)
-            axes[1, 0].bar(x + width/2, neg_events, width, label='Negative', color='red', alpha=0.7)
-            axes[1, 0].set_title('Number of Positive vs Negative Events')
-            axes[1, 0].set_ylabel('Number of Events')
-            axes[1, 0].set_xticks(x)
-            axes[1, 0].set_xticklabels([asset.replace('crypto_', 'C-').replace('stock_', 'S-') 
-                                       for asset in assets], rotation=45)
-            axes[1, 0].legend()
-            axes[1, 0].grid(True, alpha=0.3)
+            bars1 = plt.bar(x - width/2, pos_events, width, label='Positive Events', 
+                          color='green', alpha=0.7)
+            bars2 = plt.bar(x + width/2, neg_events, width, label='Negative Events', 
+                          color='red', alpha=0.7)
+            
+            plt.title('Positive vs Negative Event Reactions by Asset', fontsize=16, fontweight='bold')
+            plt.xlabel('Assets', fontsize=12)
+            plt.ylabel('Number of Events', fontsize=12)
+            plt.xticks(x, clean_labels, rotation=45, ha='right')
+            plt.legend(fontsize=12)
+            plt.grid(True, alpha=0.3, axis='y')
+            
+            # Add value labels on bars
+            for bars in [bars1, bars2]:
+                for bar in bars:
+                    height = bar.get_height()
+                    if height > 0:
+                        plt.text(bar.get_x() + bar.get_width()/2., height + 0.1,
+                               f'{int(height)}', ha='center', va='bottom', fontsize=10)
+            
+            plt.tight_layout()
+            self._save_plot("positive_vs_negative_events", "event_study")
         
-        # Min and Max CARs
+        # 4. CAR Range Plot (Min vs Max)
         if 'min_car' in stats_df.columns and 'max_car' in stats_df.columns:
+            plt.figure(figsize=(12, 8))
             min_cars = stats_df['min_car']
             max_cars = stats_df['max_car']
             
-            axes[1, 1].scatter(min_cars, max_cars, c=colors, s=100, alpha=0.7)
-            axes[1, 1].set_xlabel('Minimum CAR')
-            axes[1, 1].set_ylabel('Maximum CAR')
-            axes[1, 1].set_title('Range of CARs (Min vs Max)')
-            axes[1, 1].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-            axes[1, 1].axvline(x=0, color='black', linestyle='--', alpha=0.5)
-            axes[1, 1].grid(True, alpha=0.3)
+            scatter = plt.scatter(min_cars, max_cars, c=colors, s=120, alpha=0.7, edgecolors='black')
+            plt.xlabel('Minimum CAR', fontsize=12)
+            plt.ylabel('Maximum CAR', fontsize=12)
+            plt.title('CAR Range: Minimum vs Maximum by Asset', fontsize=16, fontweight='bold')
+            plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+            plt.axvline(x=0, color='black', linestyle='--', alpha=0.6)
+            plt.grid(True, alpha=0.3)
             
-            # Add asset labels
-            for i, asset in enumerate(assets):
-                axes[1, 1].annotate(asset.replace('crypto_', 'C-').replace('stock_', 'S-'),
-                                   (min_cars.iloc[i], max_cars.iloc[i]),
-                                   xytext=(5, 5), textcoords='offset points', fontsize=8)
-        
-        plt.tight_layout()
-        
-        # Save plot
-        filename = "event_study_summary_statistics"
-        self._save_plot(filename, "event_study")
+            # Add asset labels with better positioning
+            for i, (asset, min_val, max_val) in enumerate(zip(clean_labels, min_cars, max_cars)):
+                plt.annotate(asset, (min_val, max_val), xytext=(8, 8), 
+                           textcoords='offset points', fontsize=10, 
+                           bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7))
+            
+            plt.tight_layout()
+            self._save_plot("car_range_min_vs_max", "event_study")
     
     def plot_regression_results(
         self,
@@ -776,7 +963,7 @@ class PlotGenerator:
         regression_results: Dict,
         save_dir: Path = None
     ) -> None:
-        """Plot regression coefficients comparison."""
+        """Plot regression coefficients comparison as separate plots."""
         
         # Extract coefficients from return regressions
         coefficients = {}
@@ -799,10 +986,6 @@ class PlotGenerator:
         
         self._save_table(params_df, "regression_coefficients", "regression")
         self._save_table(pvals_df, "regression_pvalues", "regression")
-        
-        # Create coefficient comparison plot
-        fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-        fig.suptitle('Regression Coefficients: Response to Surprises', fontsize=16)
         
         # Get surprise coefficients
         assets = list(coefficients.keys())
@@ -830,49 +1013,65 @@ class PlotGenerator:
         colors = ['red' if p < 0.05 else 'orange' if p < 0.10 else 'gray' 
                  for p in surprise_pvals]
         
-        # Plot coefficients
-        axes[0].bar(range(len(surprise_coeffs)), surprise_coeffs, color=colors)
-        axes[0].set_title('Surprise Coefficients')
-        axes[0].set_ylabel('Coefficient Value')
-        axes[0].set_xticks(range(len(assets)))
-        axes[0].set_xticklabels([asset.replace('crypto_', 'C-').replace('stock_', 'S-') 
-                                for asset in assets], rotation=45)
-        axes[0].axhline(y=0, color='black', linestyle='--', alpha=0.5)
-        axes[0].grid(True, alpha=0.3)
+        # Clean asset names
+        clean_asset_names = [asset.replace('crypto_', '').replace('stock_', '').replace('_', ' ').title()[:12] 
+                           for asset in assets]
+        
+        # 1. Surprise Coefficients Plot
+        plt.figure(figsize=(12, 8))
+        bars = plt.bar(range(len(surprise_coeffs)), surprise_coeffs, color=colors, alpha=0.7)
+        plt.title('Regression Coefficients: Response to Economic Surprises', fontsize=16, fontweight='bold')
+        plt.xlabel('Assets', fontsize=12)
+        plt.ylabel('Coefficient Value', fontsize=12)
+        plt.xticks(range(len(assets)), clean_asset_names, rotation=45, ha='right')
+        plt.axhline(y=0, color='black', linestyle='--', alpha=0.6)
+        plt.grid(True, alpha=0.3, axis='y')
         
         # Add significance legend
         from matplotlib.patches import Patch
         legend_elements = [
-            Patch(facecolor='red', label='p < 0.05'),
-            Patch(facecolor='orange', label='p < 0.10'), 
-            Patch(facecolor='gray', label='p ≥ 0.10')
+            Patch(facecolor='red', label='p < 0.05 (Significant)'),
+            Patch(facecolor='orange', label='p < 0.10 (Marginally Significant)'), 
+            Patch(facecolor='gray', label='p ≥ 0.10 (Not Significant)')
         ]
-        axes[0].legend(handles=legend_elements)
+        plt.legend(handles=legend_elements, fontsize=11)
         
-        # Plot p-values
-        axes[1].bar(range(len(surprise_pvals)), surprise_pvals, color=colors)
-        axes[1].set_title('P-values')
-        axes[1].set_ylabel('P-value')
-        axes[1].set_xticks(range(len(assets)))
-        axes[1].set_xticklabels([asset.replace('crypto_', 'C-').replace('stock_', 'S-') 
-                                for asset in assets], rotation=45)
-        axes[1].axhline(y=0.05, color='red', linestyle='--', alpha=0.7, label='p = 0.05')
-        axes[1].axhline(y=0.10, color='orange', linestyle='--', alpha=0.7, label='p = 0.10')
-        axes[1].legend()
-        axes[1].grid(True, alpha=0.3)
+        # Add value labels on bars
+        for bar, value, pval in zip(bars, surprise_coeffs, surprise_pvals):
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2., height + (0.001 if height >= 0 else -0.001),
+                    f'{value:.3f}', ha='center', va='bottom' if height >= 0 else 'top', fontsize=9)
         
         plt.tight_layout()
+        self._save_plot("surprise_coefficients", "regression")
         
-        # Save plot
-        filename = "regression_coefficients"
-        self._save_plot(filename, "regression")
+        # 2. P-values Plot
+        plt.figure(figsize=(12, 8))
+        bars = plt.bar(range(len(surprise_pvals)), surprise_pvals, color=colors, alpha=0.7)
+        plt.title('Statistical Significance of Surprise Coefficients', fontsize=16, fontweight='bold')
+        plt.xlabel('Assets', fontsize=12)
+        plt.ylabel('P-value', fontsize=12)
+        plt.xticks(range(len(assets)), clean_asset_names, rotation=45, ha='right')
+        plt.axhline(y=0.05, color='red', linestyle='--', alpha=0.7, linewidth=2, label='p = 0.05')
+        plt.axhline(y=0.10, color='orange', linestyle='--', alpha=0.7, linewidth=2, label='p = 0.10')
+        plt.legend(fontsize=12)
+        plt.grid(True, alpha=0.3, axis='y')
+        
+        # Add value labels on bars
+        for bar, value in zip(bars, surprise_pvals):
+            height = bar.get_height()
+            plt.text(bar.get_x() + bar.get_width()/2., height + height * 0.02,
+                    f'{value:.3f}', ha='center', va='bottom', fontsize=9)
+        
+        plt.tight_layout()
+        self._save_plot("surprise_coefficient_pvalues", "regression")
     
     def _plot_regression_r_squared(
         self,
         regression_results: Dict,
         save_dir: Path = None
     ) -> None:
-        """Plot R-squared comparison across assets."""
+        """Plot R-squared comparison across assets as separate plots."""
         
         # Extract R-squared values
         r_squared_return = {}
@@ -900,44 +1099,73 @@ class PlotGenerator:
         
         self._save_table(r_squared_df, "regression_r_squared", "regression")
         
-        fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-        fig.suptitle('Model Fit: R-squared Values', fontsize=16)
-        
-        # Return regression R-squared
+        # 1. Return Regression R-squared Plot
         if r_squared_return:
+            plt.figure(figsize=(12, 8))
             assets = list(r_squared_return.keys())
             r2_values = list(r_squared_return.values())
-            colors = ['orange' if 'crypto' in asset.lower() else 'blue' for asset in assets]
+            colors = ['orange' if 'crypto' in asset.lower() else 'steelblue' for asset in assets]
+            clean_asset_names = [asset.replace('crypto_', '').replace('stock_', '').replace('_', ' ').title()[:12] 
+                               for asset in assets]
             
-            axes[0].bar(range(len(r2_values)), r2_values, color=colors)
-            axes[0].set_title('Return Regressions')
-            axes[0].set_ylabel('R-squared')
-            axes[0].set_xticks(range(len(assets)))
-            axes[0].set_xticklabels([asset.replace('crypto_', 'C-').replace('stock_', 'S-') 
-                                    for asset in assets], rotation=45)
-            axes[0].set_ylim(0, max(r2_values) * 1.1)
-            axes[0].grid(True, alpha=0.3)
+            bars = plt.bar(range(len(r2_values)), r2_values, color=colors, alpha=0.7)
+            plt.title('Model Fit: Return Regressions R-squared', fontsize=16, fontweight='bold')
+            plt.xlabel('Assets', fontsize=12)
+            plt.ylabel('R-squared', fontsize=12)
+            plt.xticks(range(len(assets)), clean_asset_names, rotation=45, ha='right')
+            plt.ylim(0, max(r2_values) * 1.1 if r2_values else 1)
+            plt.grid(True, alpha=0.3, axis='y')
+            
+            # Add value labels on bars
+            for bar, value in zip(bars, r2_values):
+                height = bar.get_height()
+                plt.text(bar.get_x() + bar.get_width()/2., height + height * 0.02,
+                        f'{value:.3f}', ha='center', va='bottom', fontsize=10)
+            
+            # Add color legend
+            from matplotlib.patches import Patch
+            legend_elements = [
+                Patch(facecolor='orange', label='Cryptocurrency'),
+                Patch(facecolor='steelblue', label='Traditional Assets')
+            ]
+            plt.legend(handles=legend_elements, fontsize=11)
+            
+            plt.tight_layout()
+            self._save_plot("return_regression_r_squared", "regression")
         
-        # Volatility regression R-squared
+        # 2. Volatility Regression R-squared Plot
         if r_squared_vol:
+            plt.figure(figsize=(12, 8))
             assets = list(r_squared_vol.keys())
             r2_values = list(r_squared_vol.values())
-            colors = ['orange' if 'crypto' in asset.lower() else 'blue' for asset in assets]
+            colors = ['orange' if 'crypto' in asset.lower() else 'steelblue' for asset in assets]
+            clean_asset_names = [asset.replace('crypto_', '').replace('stock_', '').replace('_', ' ').title()[:12] 
+                               for asset in assets]
             
-            axes[1].bar(range(len(r2_values)), r2_values, color=colors)
-            axes[1].set_title('Volatility Regressions')
-            axes[1].set_ylabel('R-squared')
-            axes[1].set_xticks(range(len(assets)))
-            axes[1].set_xticklabels([asset.replace('crypto_', 'C-').replace('stock_', 'S-') 
-                                    for asset in assets], rotation=45)
-            axes[1].set_ylim(0, max(r2_values) * 1.1)
-            axes[1].grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        
-        # Save plot
-        filename = "regression_r_squared"
-        self._save_plot(filename, "regression")
+            bars = plt.bar(range(len(r2_values)), r2_values, color=colors, alpha=0.7)
+            plt.title('Model Fit: Volatility Regressions R-squared', fontsize=16, fontweight='bold')
+            plt.xlabel('Assets', fontsize=12)
+            plt.ylabel('R-squared', fontsize=12)
+            plt.xticks(range(len(assets)), clean_asset_names, rotation=45, ha='right')
+            plt.ylim(0, max(r2_values) * 1.1 if r2_values else 1)
+            plt.grid(True, alpha=0.3, axis='y')
+            
+            # Add value labels on bars
+            for bar, value in zip(bars, r2_values):
+                height = bar.get_height()
+                plt.text(bar.get_x() + bar.get_width()/2., height + height * 0.02,
+                        f'{value:.3f}', ha='center', va='bottom', fontsize=10)
+            
+            # Add color legend
+            from matplotlib.patches import Patch
+            legend_elements = [
+                Patch(facecolor='orange', label='Cryptocurrency'),
+                Patch(facecolor='steelblue', label='Traditional Assets')
+            ]
+            plt.legend(handles=legend_elements, fontsize=11)
+            
+            plt.tight_layout()
+            self._save_plot("volatility_regression_r_squared", "regression")
     
     def plot_summary_statistics(
         self,
@@ -971,20 +1199,12 @@ class PlotGenerator:
         data_dict: Dict[str, pd.DataFrame],
         save_dir: Path = None
     ) -> None:
-        """Plot price evolution over time."""
-        
-        fig, axes = plt.subplots(len(data_dict), 1, figsize=(15, 6*len(data_dict)))
-        if len(data_dict) == 1:
-            axes = [axes]
-        
-        fig.suptitle('Price Evolution Over Time', fontsize=16)
+        """Plot price evolution over time as separate plots."""
         
         # Store normalized data for all categories
         all_normalized_data = pd.DataFrame()
         
-        for i, (category, data) in enumerate(data_dict.items()):
-            ax = axes[i]
-            
+        for category, data in data_dict.items():
             # Normalize prices to start at 100 for comparison
             normalized_data = data.div(data.iloc[0]) * 100
             
@@ -992,30 +1212,54 @@ class PlotGenerator:
             prefixed_data = normalized_data.add_prefix(f"{category}_")
             all_normalized_data = all_normalized_data.join(prefixed_data, how='outer')
             
-            for col in normalized_data.columns:
-                ax.plot(normalized_data.index, normalized_data[col], label=col, linewidth=2)
+            # Create individual plot for each category
+            plt.figure(figsize=(14, 8))
             
-            ax.set_title(f'{category.title()} Price Evolution (Normalized)')
-            ax.set_ylabel('Normalized Price (Base = 100)')
-            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-            ax.grid(True, alpha=0.3)
+            for col in normalized_data.columns:
+                plt.plot(normalized_data.index, normalized_data[col], label=col, linewidth=2.5, alpha=0.8)
+            
+            plt.title(f'{category.title()} Price Evolution (Normalized to Base = 100)', 
+                     fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('Normalized Price (Base = 100)', fontsize=12)
+            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=11)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            
+            # Save individual plot
+            filename = f"{category}_price_evolution"
+            self._save_plot(filename, "summary")
         
         # Save normalized price data as CSV
         if not all_normalized_data.empty:
             self._save_table(all_normalized_data, "normalized_price_evolution", "summary")
         
-        plt.tight_layout()
-        
-        # Save plot
-        filename = "price_evolution"
-        self._save_plot(filename, "summary")
+        # Create combined comparison plot
+        if len(data_dict) > 1:
+            plt.figure(figsize=(14, 8))
+            
+            # Plot average for each category
+            for category, data in data_dict.items():
+                normalized_data = data.div(data.iloc[0]) * 100
+                category_avg = normalized_data.mean(axis=1)
+                plt.plot(category_avg.index, category_avg, label=f'{category.title()} Average', 
+                        linewidth=3, alpha=0.9)
+            
+            plt.title('Price Evolution Comparison Across Asset Classes', fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('Normalized Price (Base = 100)', fontsize=12)
+            plt.legend(fontsize=12)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            
+            self._save_plot("all_categories_price_comparison", "summary")
     
     def _plot_volatility_comparison(
         self,
         data_dict: Dict[str, pd.DataFrame],
         save_dir: Path = None
     ) -> None:
-        """Plot volatility comparison."""
+        """Plot volatility comparison as separate plots."""
         
         # Calculate rolling volatility for each dataset
         volatilities = {}
@@ -1034,34 +1278,47 @@ class PlotGenerator:
             # Add category prefix to column names and combine
             prefixed_vol_data = vol_data.add_prefix(f"{category}_")
             all_volatility_data = all_volatility_data.join(prefixed_vol_data, how='outer')
+            
+            # Create individual plot for each category
+            plt.figure(figsize=(14, 8))
+            
+            for col in vol_data.columns:
+                plt.plot(vol_data.index, vol_data[col], label=col, linewidth=2.5, alpha=0.8)
+            
+            plt.title(f'{category.title()} - 30-Day Rolling Volatility (Annualized %)', 
+                     fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('Volatility (%)', fontsize=12)
+            plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=11)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            
+            # Save individual plot
+            filename = f"{category}_volatility"
+            self._save_plot(filename, "summary")
         
         # Save volatility data as CSV
         if not all_volatility_data.empty:
             self._save_table(all_volatility_data, "rolling_volatility_30d", "summary")
         
-        # Plot
-        fig, axes = plt.subplots(len(volatilities), 1, figsize=(15, 6*len(volatilities)))
-        if len(volatilities) == 1:
-            axes = [axes]
-        
-        fig.suptitle('30-Day Rolling Volatility (Annualized %)', fontsize=16)
-        
-        for i, (category, vol_data) in enumerate(volatilities.items()):
-            ax = axes[i]
+        # Create combined comparison plot
+        if len(volatilities) > 1:
+            plt.figure(figsize=(14, 8))
             
-            for col in vol_data.columns:
-                ax.plot(vol_data.index, vol_data[col], label=col, linewidth=2)
+            # Plot average volatility for each category
+            for category, vol_data in volatilities.items():
+                category_avg_vol = vol_data.mean(axis=1, skipna=True)
+                plt.plot(category_avg_vol.index, category_avg_vol, label=f'{category.title()} Average', 
+                        linewidth=3, alpha=0.9)
             
-            ax.set_title(f'{category.title()} Volatility')
-            ax.set_ylabel('Volatility (%)')
-            ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-            ax.grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        
-        # Save plot
-        filename = "volatility_comparison"
-        self._save_plot(filename, "summary")
+            plt.title('Volatility Comparison Across Asset Classes', fontsize=16, fontweight='bold')
+            plt.xlabel('Date', fontsize=12)
+            plt.ylabel('30-Day Rolling Volatility (%)', fontsize=12)
+            plt.legend(fontsize=12)
+            plt.grid(True, alpha=0.3)
+            plt.tight_layout()
+            
+            self._save_plot("all_categories_volatility_comparison", "summary")
     
     def _plot_correlation_matrix(
         self,
