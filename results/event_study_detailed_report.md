@@ -1,6 +1,6 @@
 # Comprehensive Event Study Analysis Report
 
-**Generated on:** 2025-09-25 23:50:47
+**Generated on:** 2025-09-28 12:49:35
 
 ## Event Study Summary
 
@@ -16,8 +16,8 @@
   - Total events analyzed: 8
   - Positive reactions: 3
   - Negative reactions: 5
-  - Mean CAR: -0.0204
-  - CAR Volatility: 0.0860
+  - Mean CAR: -0.0221
+  - CAR Volatility: 0.0850
 
 - **stocks_NASDAQ_cumret_1d:**
   - Total events analyzed: 4
@@ -37,8 +37,8 @@
   - Total events analyzed: 10
   - Positive reactions: 5
   - Negative reactions: 5
-  - Mean CAR: -0.0023
-  - CAR Volatility: 0.0492
+  - Mean CAR: -0.0036
+  - CAR Volatility: 0.0501
 
 - **stocks_SPY_ETF_skewness_20d:**
   - Total events analyzed: 8
@@ -86,15 +86,15 @@
   - Total events analyzed: 4
   - Positive reactions: 2
   - Negative reactions: 2
-  - Mean CAR: 0.0340
-  - CAR Volatility: 0.1852
+  - Mean CAR: 0.0352
+  - CAR Volatility: 0.1868
 
 - **stocks_DXY_skewness_20d:**
   - Total events analyzed: 6
   - Positive reactions: 3
   - Negative reactions: 3
-  - Mean CAR: -0.0166
-  - CAR Volatility: 0.1177
+  - Mean CAR: -0.0127
+  - CAR Volatility: 0.1180
 
 - **stocks_DXY_kurtosis_20d:**
   - Total events analyzed: 3
@@ -107,8 +107,8 @@
   - Total events analyzed: 3
   - Positive reactions: 1
   - Negative reactions: 2
-  - Mean CAR: -0.0685
-  - CAR Volatility: 0.1251
+  - Mean CAR: -0.0647
+  - CAR Volatility: 0.1256
 
 - **stocks_OIL_skewness_10d:**
   - Total events analyzed: 6
@@ -170,8 +170,8 @@
   - Total events analyzed: 5
   - Positive reactions: 5
   - Negative reactions: 0
-  - Mean CAR: 0.0994
-  - CAR Volatility: 0.0723
+  - Mean CAR: 0.0978
+  - CAR Volatility: 0.0735
 
 - **volatility_VIX_Index_skewness_10d:**
   - Total events analyzed: 5
@@ -255,7 +255,7 @@
   - Positive reactions: 1
   - Negative reactions: 1
   - Mean CAR: -0.1034
-  - CAR Volatility: 0.3128
+  - CAR Volatility: 0.3127
 
 - **fixed_income_Treasury_7_10Y_ETF_skewness_20d:**
   - Total events analyzed: 9
@@ -275,8 +275,8 @@
   - Total events analyzed: 5
   - Positive reactions: 3
   - Negative reactions: 2
-  - Mean CAR: -0.0359
-  - CAR Volatility: 0.0663
+  - Mean CAR: -0.0344
+  - CAR Volatility: 0.0680
 
 - **fixed_income_Investment_Grade_Bonds_skewness_5d:**
   - Total events analyzed: 5
@@ -311,7 +311,7 @@
   - Positive reactions: 2
   - Negative reactions: 5
   - Mean CAR: -0.0528
-  - CAR Volatility: 0.0881
+  - CAR Volatility: 0.0882
 
 - **fixed_income_Investment_Grade_Bonds_cumret_10d:**
   - Total events analyzed: 5
@@ -324,7 +324,7 @@
   - Total events analyzed: 8
   - Positive reactions: 3
   - Negative reactions: 5
-  - Mean CAR: -0.0386
+  - Mean CAR: -0.0387
   - CAR Volatility: 0.0705
 
 - **fixed_income_Investment_Grade_Bonds_kurtosis_20d:**
@@ -345,168 +345,168 @@
   - Total events analyzed: 4
   - Positive reactions: 3
   - Negative reactions: 1
-  - Mean CAR: 0.0156
-  - CAR Volatility: 0.1606
+  - Mean CAR: 0.0160
+  - CAR Volatility: 0.1607
 
 - **fixed_income_High_Yield_Bonds_kurtosis_20d:**
   - Total events analyzed: 6
   - Positive reactions: 6
   - Negative reactions: 0
-  - Mean CAR: 0.0615
-  - CAR Volatility: 0.0720
+  - Mean CAR: 0.0616
+  - CAR Volatility: 0.0721
 
 - **fixed_income_High_Yield_Bonds_cumret_20d:**
   - Total events analyzed: 4
   - Positive reactions: 4
   - Negative reactions: 0
-  - Mean CAR: 0.0933
+  - Mean CAR: 0.0934
   - CAR Volatility: 0.0502
 
 - **stocks_SP500_exp_vol_5d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0007
+  - Mean CAR: -0.0006
   - CAR Volatility: 0.0611
 
 - **stocks_SP500_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0197
+  - Mean CAR: 0.0199
   - CAR Volatility: 0.0798
 
 - **stocks_SP500_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0263
+  - Mean CAR: 0.0264
   - CAR Volatility: 0.0598
 
 - **stocks_SP500_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0441
-  - CAR Volatility: 0.0535
+  - Mean CAR: 0.0443
+  - CAR Volatility: 0.0534
 
 - **stocks_SP500_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0376
+  - Mean CAR: 0.0378
   - CAR Volatility: 0.0519
 
 - **stocks_SP500_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0172
-  - CAR Volatility: 0.0157
+  - Mean CAR: 0.0174
+  - CAR Volatility: 0.0158
 
 - **stocks_SP500_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0237
+  - Mean CAR: 0.0239
   - CAR Volatility: 0.0260
 
 - **stocks_DJI_exp_vol_5d:**
   - Total events analyzed: 11
   - Positive reactions: 4
   - Negative reactions: 7
-  - Mean CAR: 0.0081
-  - CAR Volatility: 0.1012
+  - Mean CAR: 0.0082
+  - CAR Volatility: 0.1013
 
 - **stocks_DJI_realized_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 6
   - Negative reactions: 5
-  - Mean CAR: 0.0228
-  - CAR Volatility: 0.0581
+  - Mean CAR: 0.0230
+  - CAR Volatility: 0.0582
 
 - **stocks_DJI_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0372
+  - Mean CAR: 0.0374
   - CAR Volatility: 0.0720
 
 - **stocks_DJI_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0259
+  - Mean CAR: 0.0262
   - CAR Volatility: 0.0360
 
 - **stocks_DJI_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0351
-  - CAR Volatility: 0.0504
+  - Mean CAR: 0.0353
+  - CAR Volatility: 0.0505
 
 - **stocks_DJI_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0177
-  - CAR Volatility: 0.0198
+  - Mean CAR: 0.0179
+  - CAR Volatility: 0.0199
 
 - **stocks_DJI_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0197
-  - CAR Volatility: 0.0286
+  - Mean CAR: 0.0200
+  - CAR Volatility: 0.0287
 
 - **stocks_NASDAQ_exp_vol_5d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0204
-  - CAR Volatility: 0.0913
+  - Mean CAR: 0.0195
+  - CAR Volatility: 0.0914
 
 - **stocks_NASDAQ_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0398
-  - CAR Volatility: 0.0844
+  - Mean CAR: 0.0401
+  - CAR Volatility: 0.0843
 
 - **stocks_NASDAQ_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0417
+  - Mean CAR: 0.0419
   - CAR Volatility: 0.0818
 
 - **stocks_NASDAQ_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0478
-  - CAR Volatility: 0.0669
+  - Mean CAR: 0.0481
+  - CAR Volatility: 0.0667
 
 - **stocks_NASDAQ_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0411
-  - CAR Volatility: 0.0712
+  - Mean CAR: 0.0413
+  - CAR Volatility: 0.0711
 
 - **stocks_NASDAQ_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0146
-  - CAR Volatility: 0.0190
+  - Mean CAR: 0.0149
+  - CAR Volatility: 0.0192
 
 - **stocks_NASDAQ_exp_vol_60d:**
   - Total events analyzed: 12
-  - Positive reactions: 8
-  - Negative reactions: 4
-  - Mean CAR: 0.0254
+  - Positive reactions: 9
+  - Negative reactions: 3
+  - Mean CAR: 0.0257
   - CAR Volatility: 0.0340
 
 - **stocks_RUSSELL2000_realized_vol_5d:**
@@ -520,260 +520,260 @@
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: 0.0192
-  - CAR Volatility: 0.0846
+  - Mean CAR: 0.0185
+  - CAR Volatility: 0.0850
 
 - **stocks_RUSSELL2000_realized_vol_10d:**
   - Total events analyzed: 9
   - Positive reactions: 8
   - Negative reactions: 1
-  - Mean CAR: 0.0531
-  - CAR Volatility: 0.0736
+  - Mean CAR: 0.0534
+  - CAR Volatility: 0.0737
 
 - **stocks_RUSSELL2000_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0626
-  - CAR Volatility: 0.1014
+  - Mean CAR: 0.0628
+  - CAR Volatility: 0.1012
 
 - **stocks_RUSSELL2000_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0712
-  - CAR Volatility: 0.0848
+  - Mean CAR: 0.0715
+  - CAR Volatility: 0.0845
 
 - **stocks_RUSSELL2000_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0687
-  - CAR Volatility: 0.0812
+  - Mean CAR: 0.0690
+  - CAR Volatility: 0.0810
 
 - **stocks_RUSSELL2000_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 11
   - Negative reactions: 1
-  - Mean CAR: 0.0204
+  - Mean CAR: 0.0207
   - CAR Volatility: 0.0170
 
 - **stocks_RUSSELL2000_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0320
-  - CAR Volatility: 0.0328
+  - Mean CAR: 0.0322
+  - CAR Volatility: 0.0327
 
 - **stocks_SPY_ETF_exp_vol_5d:**
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: 0.0027
+  - Mean CAR: 0.0028
   - CAR Volatility: 0.0608
 
 - **stocks_SPY_ETF_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0267
+  - Mean CAR: 0.0269
   - CAR Volatility: 0.0822
 
 - **stocks_SPY_ETF_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0295
+  - Mean CAR: 0.0297
   - CAR Volatility: 0.0620
 
 - **stocks_SPY_ETF_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0477
-  - CAR Volatility: 0.0554
+  - Mean CAR: 0.0479
+  - CAR Volatility: 0.0553
 
 - **stocks_SPY_ETF_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0400
+  - Mean CAR: 0.0402
   - CAR Volatility: 0.0540
 
 - **stocks_SPY_ETF_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0173
-  - CAR Volatility: 0.0157
+  - Mean CAR: 0.0176
+  - CAR Volatility: 0.0158
 
 - **stocks_SPY_ETF_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0244
+  - Mean CAR: 0.0246
   - CAR Volatility: 0.0264
 
 - **stocks_QQQ_ETF_exp_vol_5d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0308
-  - CAR Volatility: 0.1146
+  - Mean CAR: 0.0299
+  - CAR Volatility: 0.1147
 
 - **stocks_QQQ_ETF_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0410
+  - Mean CAR: 0.0413
   - CAR Volatility: 0.0804
 
 - **stocks_QQQ_ETF_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0450
+  - Mean CAR: 0.0452
   - CAR Volatility: 0.0894
 
 - **stocks_QQQ_ETF_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0433
-  - CAR Volatility: 0.0623
+  - Mean CAR: 0.0436
+  - CAR Volatility: 0.0622
 
 - **stocks_QQQ_ETF_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0373
+  - Mean CAR: 0.0375
   - CAR Volatility: 0.0708
 
 - **stocks_QQQ_ETF_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0121
-  - CAR Volatility: 0.0249
+  - Mean CAR: 0.0124
+  - CAR Volatility: 0.0251
 
 - **stocks_QQQ_ETF_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0240
+  - Mean CAR: 0.0243
   - CAR Volatility: 0.0343
 
 - **stocks_IWM_ETF_exp_vol_5d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0498
-  - CAR Volatility: 0.1055
+  - Mean CAR: 0.0491
+  - CAR Volatility: 0.1059
 
 - **stocks_IWM_ETF_realized_vol_10d:**
   - Total events analyzed: 9
   - Positive reactions: 8
   - Negative reactions: 1
-  - Mean CAR: 0.0527
-  - CAR Volatility: 0.0692
+  - Mean CAR: 0.0530
+  - CAR Volatility: 0.0693
 
 - **stocks_IWM_ETF_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0637
-  - CAR Volatility: 0.0971
+  - Mean CAR: 0.0639
+  - CAR Volatility: 0.0969
 
 - **stocks_IWM_ETF_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0708
-  - CAR Volatility: 0.0826
+  - Mean CAR: 0.0711
+  - CAR Volatility: 0.0824
 
 - **stocks_IWM_ETF_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0683
-  - CAR Volatility: 0.0771
+  - Mean CAR: 0.0686
+  - CAR Volatility: 0.0769
 
 - **stocks_IWM_ETF_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 11
   - Negative reactions: 1
-  - Mean CAR: 0.0196
+  - Mean CAR: 0.0198
   - CAR Volatility: 0.0163
 
 - **stocks_IWM_ETF_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0313
-  - CAR Volatility: 0.0311
+  - Mean CAR: 0.0315
+  - CAR Volatility: 0.0310
 
 - **stocks_VTI_ETF_exp_vol_5d:**
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: 0.0111
-  - CAR Volatility: 0.0661
+  - Mean CAR: 0.0112
+  - CAR Volatility: 0.0662
 
 - **stocks_VTI_ETF_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0335
+  - Mean CAR: 0.0337
   - CAR Volatility: 0.0862
 
 - **stocks_VTI_ETF_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0379
+  - Mean CAR: 0.0381
   - CAR Volatility: 0.0667
 
 - **stocks_VTI_ETF_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0552
-  - CAR Volatility: 0.0615
+  - Mean CAR: 0.0554
+  - CAR Volatility: 0.0614
 
 - **stocks_VTI_ETF_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0493
-  - CAR Volatility: 0.0597
+  - Mean CAR: 0.0495
+  - CAR Volatility: 0.0596
 
 - **stocks_VTI_ETF_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0185
+  - Mean CAR: 0.0187
   - CAR Volatility: 0.0166
 
 - **stocks_VTI_ETF_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0270
-  - CAR Volatility: 0.0282
+  - Mean CAR: 0.0272
+  - CAR Volatility: 0.0281
 
 - **stocks_VIX_exp_vol_5d:**
   - Total events analyzed: 11
   - Positive reactions: 5
   - Negative reactions: 6
   - Mean CAR: 0.0541
-  - CAR Volatility: 0.1352
+  - CAR Volatility: 0.1351
 
 - **stocks_VIX_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0081
-  - CAR Volatility: 0.0988
+  - Mean CAR: 0.0082
+  - CAR Volatility: 0.0989
 
 - **stocks_VIX_exp_vol_10d:**
   - Total events analyzed: 11
@@ -821,50 +821,50 @@
   - Total events analyzed: 9
   - Positive reactions: 6
   - Negative reactions: 3
-  - Mean CAR: 0.1252
-  - CAR Volatility: 0.1693
+  - Mean CAR: 0.1239
+  - CAR Volatility: 0.1697
 
 - **stocks_DXY_realized_vol_10d:**
   - Total events analyzed: 10
   - Positive reactions: 6
   - Negative reactions: 4
-  - Mean CAR: -0.0071
-  - CAR Volatility: 0.0567
+  - Mean CAR: -0.0067
+  - CAR Volatility: 0.0565
 
 - **stocks_DXY_exp_vol_10d:**
   - Total events analyzed: 9
   - Positive reactions: 6
   - Negative reactions: 3
-  - Mean CAR: 0.0407
-  - CAR Volatility: 0.0884
+  - Mean CAR: 0.0410
+  - CAR Volatility: 0.0882
 
 - **stocks_DXY_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0324
-  - CAR Volatility: 0.0858
+  - Mean CAR: 0.0327
+  - CAR Volatility: 0.0856
 
 - **stocks_DXY_exp_vol_20d:**
   - Total events analyzed: 10
   - Positive reactions: 5
   - Negative reactions: 5
-  - Mean CAR: 0.0204
-  - CAR Volatility: 0.0694
+  - Mean CAR: 0.0207
+  - CAR Volatility: 0.0693
 
 - **stocks_DXY_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: 0.0085
-  - CAR Volatility: 0.0379
+  - Mean CAR: 0.0088
+  - CAR Volatility: 0.0378
 
 - **stocks_DXY_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: 0.0157
-  - CAR Volatility: 0.0565
+  - Mean CAR: 0.0160
+  - CAR Volatility: 0.0564
 
 - **stocks_GOLD_realized_vol_5d:**
   - Total events analyzed: 6
@@ -877,50 +877,50 @@
   - Total events analyzed: 6
   - Positive reactions: 3
   - Negative reactions: 3
-  - Mean CAR: -0.0175
-  - CAR Volatility: 0.0964
+  - Mean CAR: -0.0185
+  - CAR Volatility: 0.0965
 
 - **stocks_GOLD_realized_vol_10d:**
   - Total events analyzed: 6
   - Positive reactions: 5
   - Negative reactions: 1
-  - Mean CAR: 0.0145
-  - CAR Volatility: 0.1045
+  - Mean CAR: 0.0138
+  - CAR Volatility: 0.1046
 
 - **stocks_GOLD_exp_vol_10d:**
   - Total events analyzed: 6
   - Positive reactions: 4
   - Negative reactions: 2
-  - Mean CAR: 0.0215
-  - CAR Volatility: 0.0615
+  - Mean CAR: 0.0205
+  - CAR Volatility: 0.0616
 
 - **stocks_GOLD_realized_vol_20d:**
   - Total events analyzed: 7
   - Positive reactions: 4
   - Negative reactions: 3
-  - Mean CAR: 0.0012
-  - CAR Volatility: 0.0797
+  - Mean CAR: 0.0006
+  - CAR Volatility: 0.0796
 
 - **stocks_GOLD_exp_vol_20d:**
   - Total events analyzed: 7
   - Positive reactions: 4
   - Negative reactions: 3
-  - Mean CAR: 0.0343
+  - Mean CAR: 0.0334
   - CAR Volatility: 0.0629
 
 - **stocks_GOLD_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 11
   - Negative reactions: 1
-  - Mean CAR: 0.0312
-  - CAR Volatility: 0.0363
+  - Mean CAR: 0.0308
+  - CAR Volatility: 0.0365
 
 - **stocks_GOLD_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0540
-  - CAR Volatility: 0.0624
+  - Mean CAR: 0.0536
+  - CAR Volatility: 0.0627
 
 - **stocks_OIL_realized_vol_5d:**
   - Total events analyzed: 11
@@ -933,50 +933,50 @@
   - Total events analyzed: 10
   - Positive reactions: 7
   - Negative reactions: 3
-  - Mean CAR: 0.0185
-  - CAR Volatility: 0.1023
+  - Mean CAR: 0.0188
+  - CAR Volatility: 0.1021
 
 - **stocks_OIL_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0062
-  - CAR Volatility: 0.0734
+  - Mean CAR: -0.0058
+  - CAR Volatility: 0.0733
 
 - **stocks_OIL_exp_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 5
   - Negative reactions: 6
-  - Mean CAR: 0.0029
-  - CAR Volatility: 0.0784
+  - Mean CAR: 0.0033
+  - CAR Volatility: 0.0781
 
 - **stocks_OIL_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0086
-  - CAR Volatility: 0.0452
+  - Mean CAR: 0.0089
+  - CAR Volatility: 0.0451
 
 - **stocks_OIL_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: 0.0022
-  - CAR Volatility: 0.0678
+  - Mean CAR: 0.0025
+  - CAR Volatility: 0.0675
 
 - **stocks_OIL_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: 0.0114
-  - CAR Volatility: 0.0551
+  - Mean CAR: 0.0117
+  - CAR Volatility: 0.0549
 
 - **stocks_OIL_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0062
-  - CAR Volatility: 0.0274
+  - Mean CAR: -0.0059
+  - CAR Volatility: 0.0272
 
 - **crypto_Bitcoin_realized_vol_5d:**
   - Total events analyzed: 9
@@ -989,49 +989,49 @@
   - Total events analyzed: 9
   - Positive reactions: 1
   - Negative reactions: 8
-  - Mean CAR: -0.0742
-  - CAR Volatility: 0.0654
+  - Mean CAR: -0.0741
+  - CAR Volatility: 0.0655
 
 - **crypto_Bitcoin_realized_vol_10d:**
   - Total events analyzed: 10
   - Positive reactions: 3
   - Negative reactions: 7
-  - Mean CAR: -0.0219
+  - Mean CAR: -0.0217
   - CAR Volatility: 0.0975
 
 - **crypto_Bitcoin_exp_vol_10d:**
   - Total events analyzed: 9
   - Positive reactions: 0
   - Negative reactions: 9
-  - Mean CAR: -0.0532
-  - CAR Volatility: 0.0284
+  - Mean CAR: -0.0531
+  - CAR Volatility: 0.0285
 
 - **crypto_Bitcoin_realized_vol_20d:**
   - Total events analyzed: 10
   - Positive reactions: 2
   - Negative reactions: 8
-  - Mean CAR: -0.0003
+  - Mean CAR: -0.0002
   - CAR Volatility: 0.0334
 
 - **crypto_Bitcoin_exp_vol_20d:**
   - Total events analyzed: 10
   - Positive reactions: 1
   - Negative reactions: 9
-  - Mean CAR: -0.0135
-  - CAR Volatility: 0.0640
+  - Mean CAR: -0.0134
+  - CAR Volatility: 0.0641
 
 - **crypto_Bitcoin_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: 0.0249
+  - Mean CAR: 0.0251
   - CAR Volatility: 0.0790
 
 - **crypto_Bitcoin_exp_vol_60d:**
   - Total events analyzed: 10
   - Positive reactions: 1
   - Negative reactions: 9
-  - Mean CAR: -0.0073
+  - Mean CAR: -0.0072
   - CAR Volatility: 0.0309
 
 - **volatility_VIX_Index_exp_vol_5d:**
@@ -1045,7 +1045,7 @@
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0070
+  - Mean CAR: 0.0071
   - CAR Volatility: 0.0975
 
 - **volatility_VIX_Index_exp_vol_10d:**
@@ -1059,7 +1059,7 @@
   - Total events analyzed: 12
   - Positive reactions: 12
   - Negative reactions: 0
-  - Mean CAR: 0.0485
+  - Mean CAR: 0.0486
   - CAR Volatility: 0.0436
 
 - **volatility_VIX_Index_exp_vol_20d:**
@@ -1073,63 +1073,63 @@
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0145
+  - Mean CAR: 0.0146
   - CAR Volatility: 0.0130
 
 - **volatility_VIX_Index_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0138
+  - Mean CAR: 0.0139
   - CAR Volatility: 0.0175
 
 - **volatility_Ultra_VIX_Short_Term_exp_vol_5d:**
   - Total events analyzed: 10
   - Positive reactions: 4
   - Negative reactions: 6
-  - Mean CAR: 0.0117
+  - Mean CAR: 0.0118
   - CAR Volatility: 0.1234
 
 - **volatility_Ultra_VIX_Short_Term_realized_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 7
   - Negative reactions: 4
-  - Mean CAR: -0.0067
-  - CAR Volatility: 0.0819
+  - Mean CAR: -0.0066
+  - CAR Volatility: 0.0820
 
 - **volatility_Ultra_VIX_Short_Term_exp_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 4
   - Negative reactions: 7
-  - Mean CAR: 0.0165
-  - CAR Volatility: 0.0864
+  - Mean CAR: 0.0167
+  - CAR Volatility: 0.0865
 
 - **volatility_Ultra_VIX_Short_Term_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0342
-  - CAR Volatility: 0.0565
+  - Mean CAR: 0.0344
+  - CAR Volatility: 0.0566
 
 - **volatility_Ultra_VIX_Short_Term_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0148
+  - Mean CAR: 0.0150
   - CAR Volatility: 0.0579
 
 - **volatility_Ultra_VIX_Short_Term_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 8
   - Negative reactions: 4
-  - Mean CAR: 0.0156
+  - Mean CAR: 0.0158
   - CAR Volatility: 0.0356
 
 - **volatility_Ultra_VIX_Short_Term_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0196
+  - Mean CAR: 0.0198
   - CAR Volatility: 0.0411
 
 - **fixed_income_Treasury_10Y_Yield_realized_vol_5d:**
@@ -1141,101 +1141,101 @@
 
 - **fixed_income_Treasury_10Y_Yield_exp_vol_5d:**
   - Total events analyzed: 11
-  - Positive reactions: 3
-  - Negative reactions: 8
-  - Mean CAR: -0.0259
-  - CAR Volatility: 0.1117
+  - Positive reactions: 4
+  - Negative reactions: 7
+  - Mean CAR: -0.0256
+  - CAR Volatility: 0.1118
 
 - **fixed_income_Treasury_10Y_Yield_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0398
-  - CAR Volatility: 0.0659
+  - Mean CAR: -0.0394
+  - CAR Volatility: 0.0658
 
 - **fixed_income_Treasury_10Y_Yield_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0188
-  - CAR Volatility: 0.0775
+  - Mean CAR: -0.0185
+  - CAR Volatility: 0.0776
 
 - **fixed_income_Treasury_10Y_Yield_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 10
   - Negative reactions: 2
-  - Mean CAR: 0.0139
-  - CAR Volatility: 0.0362
+  - Mean CAR: 0.0143
+  - CAR Volatility: 0.0361
 
 - **fixed_income_Treasury_10Y_Yield_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 2
   - Negative reactions: 10
-  - Mean CAR: -0.0146
+  - Mean CAR: -0.0142
   - CAR Volatility: 0.0506
 
 - **fixed_income_Treasury_10Y_Yield_realized_vol_60d:**
   - Total events analyzed: 12
-  - Positive reactions: 5
-  - Negative reactions: 7
-  - Mean CAR: 0.0053
+  - Positive reactions: 6
+  - Negative reactions: 6
+  - Mean CAR: 0.0057
   - CAR Volatility: 0.0447
 
 - **fixed_income_Treasury_10Y_Yield_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 1
   - Negative reactions: 11
-  - Mean CAR: -0.0110
+  - Mean CAR: -0.0106
   - CAR Volatility: 0.0222
 
 - **fixed_income_Treasury_5Y_Yield_exp_vol_5d:**
   - Total events analyzed: 11
   - Positive reactions: 3
   - Negative reactions: 8
-  - Mean CAR: -0.0434
-  - CAR Volatility: 0.0851
+  - Mean CAR: -0.0432
+  - CAR Volatility: 0.0853
 
 - **fixed_income_Treasury_5Y_Yield_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0228
-  - CAR Volatility: 0.0662
+  - Mean CAR: -0.0224
+  - CAR Volatility: 0.0661
 
 - **fixed_income_Treasury_5Y_Yield_exp_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 2
   - Negative reactions: 9
-  - Mean CAR: -0.0354
-  - CAR Volatility: 0.0529
+  - Mean CAR: -0.0351
+  - CAR Volatility: 0.0532
 
 - **fixed_income_Treasury_5Y_Yield_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0167
-  - CAR Volatility: 0.0241
+  - Mean CAR: 0.0170
+  - CAR Volatility: 0.0240
 
 - **fixed_income_Treasury_5Y_Yield_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0110
-  - CAR Volatility: 0.0456
+  - Mean CAR: -0.0107
+  - CAR Volatility: 0.0458
 
 - **fixed_income_Treasury_5Y_Yield_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 6
   - Negative reactions: 6
-  - Mean CAR: 0.0118
-  - CAR Volatility: 0.0507
+  - Mean CAR: 0.0121
+  - CAR Volatility: 0.0506
 
 - **fixed_income_Treasury_5Y_Yield_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0092
-  - CAR Volatility: 0.0168
+  - Mean CAR: -0.0088
+  - CAR Volatility: 0.0169
 
 - **fixed_income_Treasury_30Y_Yield_realized_vol_5d:**
   - Total events analyzed: 8
@@ -1248,49 +1248,49 @@
   - Total events analyzed: 10
   - Positive reactions: 3
   - Negative reactions: 7
-  - Mean CAR: 0.0063
-  - CAR Volatility: 0.1973
+  - Mean CAR: 0.0065
+  - CAR Volatility: 0.1974
 
 - **fixed_income_Treasury_30Y_Yield_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0199
-  - CAR Volatility: 0.0735
+  - Mean CAR: -0.0196
+  - CAR Volatility: 0.0736
 
 - **fixed_income_Treasury_30Y_Yield_exp_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 3
   - Negative reactions: 8
-  - Mean CAR: -0.0014
-  - CAR Volatility: 0.0984
+  - Mean CAR: -0.0011
+  - CAR Volatility: 0.0986
 
 - **fixed_income_Treasury_30Y_Yield_realized_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 9
   - Negative reactions: 3
-  - Mean CAR: 0.0181
+  - Mean CAR: 0.0184
   - CAR Volatility: 0.0365
 
 - **fixed_income_Treasury_30Y_Yield_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0005
+  - Mean CAR: -0.0002
   - CAR Volatility: 0.0669
 
 - **fixed_income_Treasury_30Y_Yield_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: 0.0052
-  - CAR Volatility: 0.0254
+  - Mean CAR: 0.0054
+  - CAR Volatility: 0.0253
 
 - **fixed_income_Treasury_30Y_Yield_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: 0.0029
+  - Mean CAR: 0.0031
   - CAR Volatility: 0.0435
 
 - **fixed_income_Treasury_Bond_ETF_realized_vol_5d:**
@@ -1304,49 +1304,49 @@
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: 0.0372
-  - CAR Volatility: 0.1693
+  - Mean CAR: 0.0374
+  - CAR Volatility: 0.1694
 
 - **fixed_income_Treasury_Bond_ETF_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: -0.0008
-  - CAR Volatility: 0.0913
+  - Mean CAR: -0.0004
+  - CAR Volatility: 0.0916
 
 - **fixed_income_Treasury_Bond_ETF_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: 0.0014
-  - CAR Volatility: 0.0917
+  - Mean CAR: 0.0017
+  - CAR Volatility: 0.0918
 
 - **fixed_income_Treasury_Bond_ETF_realized_vol_20d:**
   - Total events analyzed: 12
-  - Positive reactions: 9
-  - Negative reactions: 3
-  - Mean CAR: 0.0223
-  - CAR Volatility: 0.0281
+  - Positive reactions: 10
+  - Negative reactions: 2
+  - Mean CAR: 0.0227
+  - CAR Volatility: 0.0280
 
 - **fixed_income_Treasury_Bond_ETF_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0082
-  - CAR Volatility: 0.0446
+  - Mean CAR: -0.0079
+  - CAR Volatility: 0.0447
 
 - **fixed_income_Treasury_Bond_ETF_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 7
   - Negative reactions: 5
-  - Mean CAR: 0.0102
+  - Mean CAR: 0.0105
   - CAR Volatility: 0.0352
 
 - **fixed_income_Treasury_Bond_ETF_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0030
+  - Mean CAR: -0.0027
   - CAR Volatility: 0.0179
 
 - **fixed_income_Treasury_7_10Y_ETF_realized_vol_5d:**
@@ -1360,71 +1360,71 @@
   - Total events analyzed: 12
   - Positive reactions: 5
   - Negative reactions: 7
-  - Mean CAR: -0.0246
-  - CAR Volatility: 0.1096
+  - Mean CAR: -0.0244
+  - CAR Volatility: 0.1097
 
 - **fixed_income_Treasury_7_10Y_ETF_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0168
-  - CAR Volatility: 0.0491
+  - Mean CAR: -0.0164
+  - CAR Volatility: 0.0492
 
 - **fixed_income_Treasury_7_10Y_ETF_exp_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0276
-  - CAR Volatility: 0.0593
+  - Mean CAR: -0.0273
+  - CAR Volatility: 0.0594
 
 - **fixed_income_Treasury_7_10Y_ETF_realized_vol_20d:**
   - Total events analyzed: 12
-  - Positive reactions: 8
-  - Negative reactions: 4
-  - Mean CAR: 0.0143
-  - CAR Volatility: 0.0356
+  - Positive reactions: 9
+  - Negative reactions: 3
+  - Mean CAR: 0.0147
+  - CAR Volatility: 0.0354
 
 - **fixed_income_Treasury_7_10Y_ETF_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0181
-  - CAR Volatility: 0.0420
+  - Mean CAR: -0.0178
+  - CAR Volatility: 0.0421
 
 - **fixed_income_Treasury_7_10Y_ETF_realized_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: 0.0104
-  - CAR Volatility: 0.0482
+  - Mean CAR: 0.0108
+  - CAR Volatility: 0.0481
 
 - **fixed_income_Treasury_7_10Y_ETF_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 2
   - Negative reactions: 10
-  - Mean CAR: -0.0119
+  - Mean CAR: -0.0115
   - CAR Volatility: 0.0199
 
 - **fixed_income_Treasury_1_3Y_ETF_realized_vol_20d:**
   - Total events analyzed: 12
-  - Positive reactions: 6
-  - Negative reactions: 6
-  - Mean CAR: 0.0135
-  - CAR Volatility: 0.0529
+  - Positive reactions: 7
+  - Negative reactions: 5
+  - Mean CAR: 0.0138
+  - CAR Volatility: 0.0530
 
 - **fixed_income_Treasury_1_3Y_ETF_realized_vol_60d:**
   - Total events analyzed: 12
-  - Positive reactions: 5
-  - Negative reactions: 7
-  - Mean CAR: 0.0097
+  - Positive reactions: 6
+  - Negative reactions: 6
+  - Mean CAR: 0.0100
   - CAR Volatility: 0.0289
 
 - **fixed_income_Treasury_1_3Y_ETF_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0065
-  - CAR Volatility: 0.0417
+  - Mean CAR: -0.0062
+  - CAR Volatility: 0.0421
 
 - **fixed_income_Investment_Grade_Bonds_realized_vol_5d:**
   - Total events analyzed: 10
@@ -1451,8 +1451,8 @@
   - Total events analyzed: 11
   - Positive reactions: 4
   - Negative reactions: 7
-  - Mean CAR: 0.0084
-  - CAR Volatility: 0.1043
+  - Mean CAR: 0.0085
+  - CAR Volatility: 0.1044
 
 - **fixed_income_Investment_Grade_Bonds_realized_vol_20d:**
   - Total events analyzed: 12
@@ -1465,7 +1465,7 @@
   - Total events analyzed: 11
   - Positive reactions: 5
   - Negative reactions: 6
-  - Mean CAR: -0.0001
+  - Mean CAR: -0.0000
   - CAR Volatility: 0.0587
 
 - **fixed_income_Investment_Grade_Bonds_realized_vol_60d:**
@@ -1487,20 +1487,20 @@
   - Positive reactions: 1
   - Negative reactions: 11
   - Mean CAR: -0.0392
-  - CAR Volatility: 0.0602
+  - CAR Volatility: 0.0601
 
 - **fixed_income_High_Yield_Bonds_exp_vol_5d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: -0.0343
+  - Mean CAR: -0.0344
   - CAR Volatility: 0.0984
 
 - **fixed_income_High_Yield_Bonds_realized_vol_10d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0472
+  - Mean CAR: -0.0469
   - CAR Volatility: 0.1025
 
 - **fixed_income_High_Yield_Bonds_exp_vol_10d:**
@@ -1512,31 +1512,31 @@
 
 - **fixed_income_High_Yield_Bonds_realized_vol_20d:**
   - Total events analyzed: 12
-  - Positive reactions: 9
-  - Negative reactions: 3
-  - Mean CAR: 0.0329
+  - Positive reactions: 8
+  - Negative reactions: 4
+  - Mean CAR: 0.0332
   - CAR Volatility: 0.0542
 
 - **fixed_income_High_Yield_Bonds_exp_vol_20d:**
   - Total events analyzed: 12
   - Positive reactions: 3
   - Negative reactions: 9
-  - Mean CAR: -0.0123
+  - Mean CAR: -0.0122
   - CAR Volatility: 0.0551
 
 - **fixed_income_High_Yield_Bonds_realized_vol_60d:**
   - Total events analyzed: 12
-  - Positive reactions: 3
-  - Negative reactions: 9
-  - Mean CAR: 0.0098
-  - CAR Volatility: 0.0317
+  - Positive reactions: 5
+  - Negative reactions: 7
+  - Mean CAR: 0.0101
+  - CAR Volatility: 0.0318
 
 - **fixed_income_High_Yield_Bonds_exp_vol_60d:**
   - Total events analyzed: 12
   - Positive reactions: 4
   - Negative reactions: 8
-  - Mean CAR: 0.0098
-  - CAR Volatility: 0.0461
+  - Mean CAR: 0.0100
+  - CAR Volatility: 0.0462
 
 - **economic_Unemployment_Rate_sign_yoy_change:**
   - Total events analyzed: 5
@@ -1605,8 +1605,8 @@
   - Total events analyzed: 6
   - Positive reactions: 4
   - Negative reactions: 2
-  - Mean CAR: 0.0102
-  - CAR Volatility: 0.1337
+  - Mean CAR: 0.0136
+  - CAR Volatility: 0.1394
 
 - **stocks_QQQ_ETF_cumret_10d:**
   - Total events analyzed: 5
@@ -1619,8 +1619,8 @@
   - Total events analyzed: 6
   - Positive reactions: 2
   - Negative reactions: 4
-  - Mean CAR: -0.0024
-  - CAR Volatility: 0.1001
+  - Mean CAR: -0.0005
+  - CAR Volatility: 0.0996
 
 - **stocks_IWM_ETF_cumret_1d:**
   - Total events analyzed: 3
@@ -1640,8 +1640,8 @@
   - Total events analyzed: 7
   - Positive reactions: 2
   - Negative reactions: 5
-  - Mean CAR: -0.0365
-  - CAR Volatility: 0.0979
+  - Mean CAR: -0.0377
+  - CAR Volatility: 0.0977
 
 - **stocks_VIX_kurtosis_5d:**
   - Total events analyzed: 3
@@ -1668,8 +1668,8 @@
   - Total events analyzed: 6
   - Positive reactions: 2
   - Negative reactions: 4
-  - Mean CAR: -0.0439
-  - CAR Volatility: 0.1135
+  - Mean CAR: -0.0440
+  - CAR Volatility: 0.1136
 
 - **stocks_OIL_kurtosis_5d:**
   - Total events analyzed: 8
@@ -1984,7 +1984,7 @@
   - Positive reactions: 0
   - Negative reactions: 6
   - Mean CAR: -0.0738
-  - CAR Volatility: 0.0470
+  - CAR Volatility: 0.0469
 
 - **fixed_income_Treasury_7_10Y_ETF_skewness_10d:**
   - Total events analyzed: 4
@@ -1997,35 +1997,35 @@
   - Total events analyzed: 4
   - Positive reactions: 3
   - Negative reactions: 1
-  - Mean CAR: 0.0453
+  - Mean CAR: 0.0454
   - CAR Volatility: 0.0575
 
 - **fixed_income_Treasury_1_3Y_ETF_kurtosis_10d:**
   - Total events analyzed: 6
-  - Positive reactions: 4
-  - Negative reactions: 2
-  - Mean CAR: 0.0038
-  - CAR Volatility: 0.0800
+  - Positive reactions: 5
+  - Negative reactions: 1
+  - Mean CAR: 0.0228
+  - CAR Volatility: 0.0882
 
 - **fixed_income_Treasury_1_3Y_ETF_cumret_10d:**
   - Total events analyzed: 7
   - Positive reactions: 6
   - Negative reactions: 1
-  - Mean CAR: 0.1066
-  - CAR Volatility: 0.0915
+  - Mean CAR: 0.1113
+  - CAR Volatility: 0.0929
 
 - **fixed_income_High_Yield_Bonds_skewness_10d:**
   - Total events analyzed: 3
   - Positive reactions: 3
   - Negative reactions: 0
-  - Mean CAR: 0.0983
-  - CAR Volatility: 0.0122
+  - Mean CAR: 0.0988
+  - CAR Volatility: 0.0134
 
 - **fixed_income_High_Yield_Bonds_cumret_10d:**
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.1080
+  - Mean CAR: 0.1079
   - CAR Volatility: 0.0000
 
 - **stocks_SP500_realized_vol_5d:**
@@ -2417,36 +2417,36 @@
   - Total events analyzed: 11
   - Positive reactions: 3
   - Negative reactions: 8
-  - Mean CAR: 0.0132
+  - Mean CAR: 0.0133
   - CAR Volatility: 0.0805
 
 - **fixed_income_Treasury_1_3Y_ETF_exp_vol_5d:**
   - Total events analyzed: 11
   - Positive reactions: 4
   - Negative reactions: 7
-  - Mean CAR: -0.0420
-  - CAR Volatility: 0.1176
+  - Mean CAR: -0.0417
+  - CAR Volatility: 0.1177
 
 - **fixed_income_Treasury_1_3Y_ETF_realized_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 2
   - Negative reactions: 9
-  - Mean CAR: -0.0123
-  - CAR Volatility: 0.0577
+  - Mean CAR: -0.0121
+  - CAR Volatility: 0.0574
 
 - **fixed_income_Treasury_1_3Y_ETF_exp_vol_10d:**
   - Total events analyzed: 11
   - Positive reactions: 3
   - Negative reactions: 8
-  - Mean CAR: -0.0226
-  - CAR Volatility: 0.0752
+  - Mean CAR: -0.0224
+  - CAR Volatility: 0.0750
 
 - **fixed_income_Treasury_1_3Y_ETF_exp_vol_20d:**
   - Total events analyzed: 11
   - Positive reactions: 2
   - Negative reactions: 9
-  - Mean CAR: -0.0247
-  - CAR Volatility: 0.0472
+  - Mean CAR: -0.0244
+  - CAR Volatility: 0.0471
 
 - **high_vix_regime:**
   - Total events analyzed: 8
@@ -2480,29 +2480,29 @@
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.1180
-  - CAR Volatility: 0.0812
+  - Mean CAR: 0.1174
+  - CAR Volatility: 0.0809
 
 - **stocks_RUSSELL2000_kurtosis_20d:**
   - Total events analyzed: 2
   - Positive reactions: 0
   - Negative reactions: 2
-  - Mean CAR: -0.1529
-  - CAR Volatility: 0.0370
+  - Mean CAR: -0.1596
+  - CAR Volatility: 0.0340
 
 - **stocks_RUSSELL2000_cumret_20d:**
   - Total events analyzed: 4
   - Positive reactions: 4
   - Negative reactions: 0
-  - Mean CAR: 0.1541
-  - CAR Volatility: 0.0402
+  - Mean CAR: 0.1534
+  - CAR Volatility: 0.0405
 
 - **stocks_SPY_ETF_kurtosis_5d:**
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.2044
-  - CAR Volatility: 0.0514
+  - Mean CAR: 0.2043
+  - CAR Volatility: 0.0515
 
 - **stocks_QQQ_ETF_kurtosis_5d:**
   - Total events analyzed: 3
@@ -2515,15 +2515,15 @@
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.1325
-  - CAR Volatility: 0.0746
+  - Mean CAR: 0.1319
+  - CAR Volatility: 0.0744
 
 - **stocks_IWM_ETF_cumret_20d:**
   - Total events analyzed: 4
   - Positive reactions: 4
   - Negative reactions: 0
-  - Mean CAR: 0.1489
-  - CAR Volatility: 0.0540
+  - Mean CAR: 0.1483
+  - CAR Volatility: 0.0541
 
 - **crypto_Binance_Coin_kurtosis_20d:**
   - Total events analyzed: 7
@@ -2627,7 +2627,7 @@
   - Total events analyzed: 1
   - Positive reactions: 1
   - Negative reactions: 0
-  - Mean CAR: 0.0098
+  - Mean CAR: 0.0097
   - CAR Volatility: nan
 
 - **fixed_income_Treasury_7_10Y_ETF_cumret_5d:**
@@ -2642,42 +2642,42 @@
   - Positive reactions: 3
   - Negative reactions: 4
   - Mean CAR: -0.0545
-  - CAR Volatility: 0.1225
+  - CAR Volatility: 0.1226
 
 - **fixed_income_Treasury_1_3Y_ETF_kurtosis_5d:**
   - Total events analyzed: 5
   - Positive reactions: 3
   - Negative reactions: 2
-  - Mean CAR: 0.0666
-  - CAR Volatility: 0.1215
+  - Mean CAR: 0.0665
+  - CAR Volatility: 0.1208
 
 - **fixed_income_Treasury_1_3Y_ETF_cumret_5d:**
   - Total events analyzed: 5
   - Positive reactions: 3
   - Negative reactions: 2
-  - Mean CAR: 0.0289
-  - CAR Volatility: 0.1912
+  - Mean CAR: 0.0288
+  - CAR Volatility: 0.1914
 
 - **fixed_income_Treasury_1_3Y_ETF_cumret_20d:**
   - Total events analyzed: 4
   - Positive reactions: 2
   - Negative reactions: 2
   - Mean CAR: -0.0046
-  - CAR Volatility: 0.1183
+  - CAR Volatility: 0.1184
 
 - **fixed_income_High_Yield_Bonds_cumret_1d:**
   - Total events analyzed: 1
   - Positive reactions: 0
   - Negative reactions: 1
-  - Mean CAR: -0.0567
+  - Mean CAR: -0.0566
   - CAR Volatility: nan
 
 - **fixed_income_High_Yield_Bonds_skewness_20d:**
   - Total events analyzed: 5
   - Positive reactions: 3
   - Negative reactions: 2
-  - Mean CAR: 0.0328
-  - CAR Volatility: 0.1492
+  - Mean CAR: 0.0297
+  - CAR Volatility: 0.1519
 
 - **crypto_Binance_Coin_realized_vol_5d:**
   - Total events analyzed: 4
@@ -2746,28 +2746,28 @@
   - Total events analyzed: 4
   - Positive reactions: 2
   - Negative reactions: 2
-  - Mean CAR: -0.0287
-  - CAR Volatility: 0.1035
+  - Mean CAR: -0.0300
+  - CAR Volatility: 0.1042
 
 - **stocks_DJI_skewness_20d:**
   - Total events analyzed: 7
   - Positive reactions: 2
   - Negative reactions: 5
-  - Mean CAR: -0.0882
-  - CAR Volatility: 0.0869
+  - Mean CAR: -0.0878
+  - CAR Volatility: 0.0868
 
 - **stocks_DJI_kurtosis_20d:**
   - Total events analyzed: 4
   - Positive reactions: 1
   - Negative reactions: 3
-  - Mean CAR: -0.0676
-  - CAR Volatility: 0.1820
+  - Mean CAR: -0.0685
+  - CAR Volatility: 0.1825
 
 - **stocks_DJI_cumret_20d:**
   - Total events analyzed: 1
   - Positive reactions: 1
   - Negative reactions: 0
-  - Mean CAR: 0.1496
+  - Mean CAR: 0.1489
   - CAR Volatility: nan
 
 - **stocks_NASDAQ_kurtosis_10d:**
@@ -2781,15 +2781,15 @@
   - Total events analyzed: 5
   - Positive reactions: 2
   - Negative reactions: 3
-  - Mean CAR: -0.0066
-  - CAR Volatility: 0.1352
+  - Mean CAR: -0.0060
+  - CAR Volatility: 0.1367
 
 - **stocks_SPY_ETF_kurtosis_10d:**
   - Total events analyzed: 5
   - Positive reactions: 3
   - Negative reactions: 2
-  - Mean CAR: 0.0372
-  - CAR Volatility: 0.1177
+  - Mean CAR: 0.0354
+  - CAR Volatility: 0.1168
 
 - **stocks_QQQ_ETF_kurtosis_10d:**
   - Total events analyzed: 7
@@ -2803,35 +2803,35 @@
   - Positive reactions: 1
   - Negative reactions: 2
   - Mean CAR: -0.0488
-  - CAR Volatility: 0.1179
+  - CAR Volatility: 0.1162
 
 - **stocks_VTI_ETF_kurtosis_5d:**
   - Total events analyzed: 1
   - Positive reactions: 1
   - Negative reactions: 0
-  - Mean CAR: 0.1245
+  - Mean CAR: 0.1244
   - CAR Volatility: nan
 
 - **stocks_VTI_ETF_kurtosis_10d:**
   - Total events analyzed: 4
   - Positive reactions: 1
   - Negative reactions: 3
-  - Mean CAR: 0.0064
-  - CAR Volatility: 0.0403
+  - Mean CAR: 0.0040
+  - CAR Volatility: 0.0424
 
 - **stocks_VIX_kurtosis_10d:**
   - Total events analyzed: 1
   - Positive reactions: 0
   - Negative reactions: 1
-  - Mean CAR: -0.1038
+  - Mean CAR: -0.1037
   - CAR Volatility: nan
 
 - **stocks_VIX_cumret_20d:**
   - Total events analyzed: 2
   - Positive reactions: 1
   - Negative reactions: 1
-  - Mean CAR: 0.0099
-  - CAR Volatility: 0.0388
+  - Mean CAR: 0.0103
+  - CAR Volatility: 0.0395
 
 - **stocks_DXY_cumret_10d:**
   - Total events analyzed: 1
@@ -2858,8 +2858,8 @@
   - Total events analyzed: 2
   - Positive reactions: 1
   - Negative reactions: 1
-  - Mean CAR: -0.1017
-  - CAR Volatility: 0.1512
+  - Mean CAR: -0.0995
+  - CAR Volatility: 0.1483
 
 - **stocks_OIL_skewness_5d:**
   - Total events analyzed: 2
@@ -2970,15 +2970,15 @@
   - Total events analyzed: 1
   - Positive reactions: 0
   - Negative reactions: 1
-  - Mean CAR: -0.1010
+  - Mean CAR: -0.1009
   - CAR Volatility: nan
 
 - **volatility_VIX_Index_cumret_20d:**
   - Total events analyzed: 2
   - Positive reactions: 1
   - Negative reactions: 1
-  - Mean CAR: 0.0099
-  - CAR Volatility: 0.0388
+  - Mean CAR: 0.0103
+  - CAR Volatility: 0.0395
 
 - **volatility_VIX_ETN_cumret_5d:**
   - Total events analyzed: 3
@@ -3012,15 +3012,15 @@
   - Total events analyzed: 1
   - Positive reactions: 0
   - Negative reactions: 1
-  - Mean CAR: -0.0252
+  - Mean CAR: -0.0165
   - CAR Volatility: nan
 
 - **volatility_Ultra_VIX_Short_Term_kurtosis_20d:**
   - Total events analyzed: 5
   - Positive reactions: 3
   - Negative reactions: 2
-  - Mean CAR: -0.0240
-  - CAR Volatility: 0.0622
+  - Mean CAR: -0.0229
+  - CAR Volatility: 0.0609
 
 - **volatility_Ultra_VIX_Short_Term_cumret_20d:**
   - Total events analyzed: 3
@@ -3054,15 +3054,15 @@
   - Total events analyzed: 3
   - Positive reactions: 2
   - Negative reactions: 1
-  - Mean CAR: 0.0034
-  - CAR Volatility: 0.1516
+  - Mean CAR: 0.0012
+  - CAR Volatility: 0.1491
 
 - **fixed_income_Treasury_5Y_Yield_kurtosis_20d:**
   - Total events analyzed: 5
   - Positive reactions: 2
   - Negative reactions: 3
-  - Mean CAR: -0.0085
-  - CAR Volatility: 0.0254
+  - Mean CAR: -0.0110
+  - CAR Volatility: 0.0221
 
 - **fixed_income_Treasury_Bond_ETF_skewness_10d:**
   - Total events analyzed: 4
@@ -3075,43 +3075,43 @@
   - Total events analyzed: 6
   - Positive reactions: 6
   - Negative reactions: 0
-  - Mean CAR: 0.0569
-  - CAR Volatility: 0.0315
+  - Mean CAR: 0.0571
+  - CAR Volatility: 0.0316
 
 - **fixed_income_Treasury_7_10Y_ETF_kurtosis_5d:**
   - Total events analyzed: 6
   - Positive reactions: 4
   - Negative reactions: 2
-  - Mean CAR: 0.0750
-  - CAR Volatility: 0.1782
+  - Mean CAR: 0.0749
+  - CAR Volatility: 0.1783
 
 - **fixed_income_Treasury_7_10Y_ETF_kurtosis_10d:**
   - Total events analyzed: 3
   - Positive reactions: 2
   - Negative reactions: 1
-  - Mean CAR: 0.0234
-  - CAR Volatility: 0.0457
+  - Mean CAR: 0.0235
+  - CAR Volatility: 0.0456
 
 - **fixed_income_Treasury_1_3Y_ETF_skewness_5d:**
   - Total events analyzed: 4
   - Positive reactions: 2
   - Negative reactions: 2
-  - Mean CAR: 0.0426
-  - CAR Volatility: 0.1165
+  - Mean CAR: 0.0418
+  - CAR Volatility: 0.1173
 
 - **fixed_income_Treasury_1_3Y_ETF_skewness_20d:**
   - Total events analyzed: 6
   - Positive reactions: 3
   - Negative reactions: 3
-  - Mean CAR: -0.0268
-  - CAR Volatility: 0.0486
+  - Mean CAR: -0.0267
+  - CAR Volatility: 0.0490
 
 - **fixed_income_Treasury_1_3Y_ETF_kurtosis_20d:**
   - Total events analyzed: 3
   - Positive reactions: 3
   - Negative reactions: 0
-  - Mean CAR: 0.0255
-  - CAR Volatility: 0.0244
+  - Mean CAR: 0.0302
+  - CAR Volatility: 0.0267
 
 - **fixed_income_High_Yield_Bonds_cumret_5d:**
   - Total events analyzed: 3
@@ -3495,8 +3495,8 @@
   - Total events analyzed: 4
   - Positive reactions: 1
   - Negative reactions: 3
-  - Mean CAR: -0.0030
-  - CAR Volatility: 0.0470
+  - Mean CAR: -0.0057
+  - CAR Volatility: 0.0456
 
 - **stocks_SP500_cumret_10d:**
   - Total events analyzed: 2
@@ -3509,22 +3509,22 @@
   - Total events analyzed: 3
   - Positive reactions: 2
   - Negative reactions: 1
-  - Mean CAR: 0.0942
-  - CAR Volatility: 0.1550
+  - Mean CAR: 0.0931
+  - CAR Volatility: 0.1561
 
 - **stocks_SP500_cumret_20d:**
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.1185
-  - CAR Volatility: 0.0225
+  - Mean CAR: 0.1199
+  - CAR Volatility: 0.0218
 
 - **stocks_DJI_skewness_10d:**
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.0648
-  - CAR Volatility: 0.0276
+  - Mean CAR: 0.0651
+  - CAR Volatility: 0.0278
 
 - **stocks_NASDAQ_cumret_5d:**
   - Total events analyzed: 1
@@ -3551,8 +3551,8 @@
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.0665
-  - CAR Volatility: 0.0426
+  - Mean CAR: 0.0658
+  - CAR Volatility: 0.0421
 
 - **stocks_SPY_ETF_cumret_10d:**
   - Total events analyzed: 3
@@ -3565,8 +3565,8 @@
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.1359
-  - CAR Volatility: 0.0362
+  - Mean CAR: 0.1372
+  - CAR Volatility: 0.0354
 
 - **stocks_QQQ_ETF_cumret_5d:**
   - Total events analyzed: 1
@@ -3579,7 +3579,7 @@
   - Total events analyzed: 1
   - Positive reactions: 1
   - Negative reactions: 0
-  - Mean CAR: 0.0180
+  - Mean CAR: 0.0176
   - CAR Volatility: nan
 
 - **stocks_VTI_ETF_cumret_10d:**
@@ -3593,15 +3593,15 @@
   - Total events analyzed: 2
   - Positive reactions: 1
   - Negative reactions: 1
-  - Mean CAR: 0.0413
-  - CAR Volatility: 0.2088
+  - Mean CAR: 0.0395
+  - CAR Volatility: 0.2102
 
 - **stocks_VTI_ETF_cumret_20d:**
   - Total events analyzed: 2
   - Positive reactions: 2
   - Negative reactions: 0
-  - Mean CAR: 0.0781
-  - CAR Volatility: 0.0406
+  - Mean CAR: 0.0795
+  - CAR Volatility: 0.0401
 
 - **stocks_DXY_kurtosis_5d:**
   - Total events analyzed: 1
@@ -3720,7 +3720,7 @@
   - Positive reactions: 1
   - Negative reactions: 1
   - Mean CAR: 0.0444
-  - CAR Volatility: 0.1620
+  - CAR Volatility: 0.1619
 
 - **crypto_Avalanche_realized_vol_10d:**
   - Total events analyzed: 5
@@ -3747,15 +3747,15 @@
   - Total events analyzed: 1
   - Positive reactions: 1
   - Negative reactions: 0
-  - Mean CAR: 0.1422
+  - Mean CAR: 0.1423
   - CAR Volatility: nan
 
 - **stocks_IWM_ETF_kurtosis_20d:**
   - Total events analyzed: 2
   - Positive reactions: 0
   - Negative reactions: 2
-  - Mean CAR: -0.1112
-  - CAR Volatility: 0.0219
+  - Mean CAR: -0.1179
+  - CAR Volatility: 0.0246
 
 - **stocks_GOLD_cumret_5d:**
   - Total events analyzed: 1
@@ -3768,8 +3768,8 @@
   - Total events analyzed: 2
   - Positive reactions: 1
   - Negative reactions: 1
-  - Mean CAR: -0.0508
-  - CAR Volatility: 0.0950
+  - Mean CAR: -0.0492
+  - CAR Volatility: 0.0935
 
 - **crypto_Bitcoin_cumret_10d:**
   - Total events analyzed: 2
@@ -3901,7 +3901,7 @@
   - Total events analyzed: 1
   - Positive reactions: 1
   - Negative reactions: 0
-  - Mean CAR: 0.0701
+  - Mean CAR: 0.0699
   - CAR Volatility: nan
 
 - **stocks_GOLD_kurtosis_5d:**
@@ -3915,21 +3915,21 @@
   - Total events analyzed: 1
   - Positive reactions: 0
   - Negative reactions: 1
-  - Mean CAR: -0.1276
+  - Mean CAR: -0.1271
   - CAR Volatility: nan
 
 - **stocks_GOLD_cumret_10d:**
   - Total events analyzed: 2
   - Positive reactions: 1
   - Negative reactions: 1
-  - Mean CAR: 0.0316
-  - CAR Volatility: 0.1967
+  - Mean CAR: 0.0345
+  - CAR Volatility: 0.2005
 
 - **stocks_GOLD_cumret_20d:**
   - Total events analyzed: 1
   - Positive reactions: 1
   - Negative reactions: 0
-  - Mean CAR: 0.0183
+  - Mean CAR: 0.0181
   - CAR Volatility: nan
 
 - **crypto_Ripple_cumret_5d:**
@@ -4069,7 +4069,7 @@
   - Total events analyzed: 1
   - Positive reactions: 0
   - Negative reactions: 1
-  - Mean CAR: -0.0793
+  - Mean CAR: -0.0819
   - CAR Volatility: nan
 
 - **stocks_QQQ_ETF_kurtosis_20d:**

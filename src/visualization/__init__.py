@@ -1,9 +1,10 @@
-"""
-Visualization package for generating plots and charts.
+"""Visualization package exports.
+
+Charts are no longer produced – the ``PlotGenerator`` symbol now
+refers to a tabular exporter that persists analysis artefacts as CSV
+files while keeping the historical API intact.
 """
 
-from .plot_generator import PlotGenerator
+from .table_exporter import PlotGenerator
 
-__all__ = [
-    'PlotGenerator'
-]
+__all__ = ["PlotGenerator"]

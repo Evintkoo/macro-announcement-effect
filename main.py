@@ -48,6 +48,7 @@ from preprocessing.data_preprocessor import DataPreprocessor
 from preprocessing.feature_engineering import FeatureEngineer
 from analysis.event_study import EventStudyAnalyzer
 from analysis.regression_analysis import RegressionAnalyzer
+from visualization import PlotGenerator
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings('ignore', category=FutureWarning)
@@ -72,6 +73,8 @@ class MacroAnnouncementAnalysis:
         # Analyzers
         self.event_study_analyzer = None
         self.regression_analyzer = None
+        self.plot_generator = None
+        self.tables_dir = None
         
     def setup(self):
         """Set up configuration, logging, and directories."""
@@ -110,6 +113,16 @@ class MacroAnnouncementAnalysis:
         # Initialize analyzers
         self.event_study_analyzer = EventStudyAnalyzer()
         self.regression_analyzer = RegressionAnalyzer()
+        self.tables_dir = Path(self.config['output']['tables_dir'])
+        self.tables_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.plot_generator = PlotGenerator(
+                figures_dir=self.config['output'].get('figures_dir'),
+                tables_dir=self.config['output']['tables_dir']
+            )
+        except Exception as exc:
+            self.logger.warning(f"Failed to initialize table exporter: {exc}")
+            self.plot_generator = None
         self.logger.info("Analyzers initialized")
     
     def _setup_main_log_file(self):
@@ -593,6 +606,15 @@ class MacroAnnouncementAnalysis:
         with open(metadata_file, 'w') as f:
             json.dump(metadata, f, indent=2, default=str)
         self.logger.info(f"Enhanced metadata saved to: {metadata_file}")
+
+        if self.plot_generator and self.aligned_data is not None and not self.aligned_data.empty:
+            try:
+                self.plot_generator.plot_data_overview(
+                    self.aligned_data,
+                    save_dir=self.tables_dir / "overview"
+                )
+            except Exception as exc:
+                self.logger.warning(f"Failed to export data overview tables: {exc}")
     
     def _basic_preprocessing_fallback(self):
         """Fallback to basic preprocessing if enhanced fails."""
@@ -974,6 +996,15 @@ class MacroAnnouncementAnalysis:
             f.write("- **Asset Classes:** Cryptocurrencies, stocks, bonds, commodities\n\n")
         
         self.logger.info(f"Event study detailed report saved to: {report_file}")
+
+        if self.plot_generator:
+            try:
+                self.plot_generator.plot_event_study_results(
+                    event_results,
+                    save_dir=self.tables_dir / "event_study"
+                )
+            except Exception as exc:
+                self.logger.warning(f"Failed to export event study tables: {exc}")
     
     def _save_comprehensive_results(self, comprehensive_results: Dict[str, Any]):
         """Save all comprehensive analysis results."""
@@ -1019,6 +1050,36 @@ class MacroAnnouncementAnalysis:
         
         # Generate comprehensive research report
         self._generate_comprehensive_research_report(comprehensive_results)
+
+        if self.plot_generator:
+            try:
+                regression_section = comprehensive_results.get('regression_analysis', {})
+                if regression_section:
+                    self.plot_generator.plot_regression_results(
+                        regression_section,
+                        save_dir=self.tables_dir / "regression"
+                    )
+
+                summary_frames = {}
+                if self.aligned_data is not None and not self.aligned_data.empty:
+                    summary_frames['aligned_data'] = self.aligned_data
+                for name, dataset in [
+                    ('stock_data', self.stock_data),
+                    ('crypto_data', self.crypto_data),
+                    ('economic_data', self.economic_data)
+                ]:
+                    if dataset is not None and not isinstance(dataset, pd.DataFrame):
+                        continue
+                    if dataset is not None and not dataset.empty:
+                        summary_frames[name] = dataset
+
+                if summary_frames:
+                    self.plot_generator.plot_summary_statistics(
+                        summary_frames,
+                        save_dir=self.tables_dir / "summary"
+                    )
+            except Exception as exc:
+                self.logger.warning(f"Failed to export regression or summary tables: {exc}")
     
     def generate_summary_report(self):
         """Generate comprehensive summary report."""
