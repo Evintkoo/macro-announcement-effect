@@ -1,121 +1,152 @@
 # Methodology
 
-This document summarises the empirical design implemented in the repository. It aligns the theoretical framing from the research plan with the concrete estimators and diagnostics executed by the Python pipeline.
+This section documents the empirical design actually implemented in the codebase. It maps research questions to concrete estimators, data flows, and diagnostics used by the pipeline so the study is reproducible and extensible.
 
-## Analytical Overview
+## Pipeline overview
 
-| Component | Purpose | Primary Implementation |
-|-----------|---------|------------------------|
-| Data quality and feature construction | Harmonise heterogeneous financial and macro series, derive return/volatility/surprise features, and enforce reproducibility through metadata and reports. | `MacroAnnouncementAnalysis.preprocess_data`, `FeatureEngineer.create_comprehensive_features`, `DataQualityAnalyzer.comprehensive_data_analysis` |
-| Event study | Measure short-run abnormal returns and cumulative abnormal returns (CARs) around key macro events. | `EventStudyAnalyzer.run_full_event_study` |
-| Regression suite | Quantify sensitivity of crypto and equity returns/volatility to macro surprises, with pooled models contrasting asset classes. | `RegressionAnalyzer.run_pooled_regression`, `RegressionAnalyzer.return_volatility_regression` |
-| Hypothesis testing | Produce lightweight but robust non-parametric and parametric tests for cross-asset comparisons. | `ComprehensiveStatisticalAnalysis.run_complete_analysis` |
+- Data acquisition and alignment: `EnhancedDataCollector.collect_comprehensive_data` + `create_comprehensive_dataset`
+- Quality diagnostics and cleaning: `DataQualityAnalyzer.comprehensive_data_analysis` + rules in `MacroAnnouncementAnalysis._enhanced_data_cleaning`
+- Feature engineering: `FeatureEngineer.create_comprehensive_features` and `create_analysis_features`
+- Event study: `EventStudyAnalyzer.run_full_event_study` via `analyze_events`
+- Regressions and comparisons: `RegressionAnalyzer.run_pooled_regression` (+ optional asymmetric/regime variants)
+- Visualization and tables: `PlotGenerator` exports to `results/tables/**`
 
-## Data and Feature Construction
+Key artifacts are emitted to `results/` (CSV/MD) and logs to `logs/`. Processed data and quality reports live under `data/processed/`.
 
-### Sources
+## Data design
 
-Free datasets are harvested through the collectors in `src/data_collection/`:
+### Sources and coverage
 
-- **Yahoo Finance (`YahooFinanceCollector`)**: Index-level equities, ETFs, volatility indices, rates, commodities.
-- **Cryptocurrency (`CryptoCollector`)**: Major crypto spot pairs via Yahoo Finance (BTC, ETH, BNB, ADA, SOL, etc.).
-- **FRED/economic indicators (`EconomicDataCollector` and `EnhancedDataCollector`)**: Employment, inflation, rates, GDP, money supply, sentiment.
-- **Enhanced collector**: Aggregates and harmonises all available series, including volatility and fixed-income proxies.
+Collected via `src/data_collection/enhanced_data_collector.py` with 10-year historical coverage by default:
 
-### Cleaning & Diagnostics
+- Stocks/indices, ETFs, FX, commodities: Yahoo Finance (e.g., SPY, ^GSPC, ^VIX, DX=F, GC=F, CL=F)
+- Cryptocurrencies: Yahoo Finance (BTC-USD, ETH-USD, BNB-USD, …)
+- Economic indicators: FRED CSV endpoint (employment, CPI/PCE, GDP, rates, money supply, sentiment)
+- Volatility and fixed income proxies: ^VIX, VXX/UVXY, ^TNX, TLT/IEF/LQD/HYG
 
-`MacroAnnouncementAnalysis.preprocess_data` orchestrates the following checks via `DataQualityAnalyzer`:
+All time indexes are normalized to timezone-naive `DatetimeIndex`, series are outer-joined, then forward-filled for low-frequency macro data. Columns with >80% missingness are dropped during cleaning.
 
-1. **Missingness and continuity** – missing percentages, longest gap detection, and imputation strategy (forward-fill for macro series).
-2. **Outlier controls** – IQR- and z-score-based clipping to the 1st–99th percentiles when a column exhibits >5% extreme values.
-3. **Stationarity signals** – Augmented Dickey-Fuller tests where enough observations exist.
-4. **Structural breaks** – Heuristic rolling-mean change detection to flag possible regime shifts.
-5. **Correlation scan** – High-correlation pairs (`|ρ| > 0.8`) to aid multicollinearity assessment.
+### Quality diagnostics and cleaning
 
-Outputs are persisted to `data/processed/quality_reports/` (JSON + Markdown summary) along with an enriched metadata file describing variable categories and coverage.
+`DataQualityAnalyzer.comprehensive_data_analysis` produces:
 
-### Feature Engineering Highlights
+- Missingness profile and gap structure
+- Outlier flags (IQR and |z| > 3)
+- Stationarity (ADF where n ≥ 50)
+- Correlations and high-correlation pairs (|ρ| > 0.8)
+- Simple structural-break heuristics from rolling-mean change points
 
-`FeatureEngineer.create_comprehensive_features` creates a dense feature matrix by combining:
+Cleaning rules in `MacroAnnouncementAnalysis._enhanced_data_cleaning`:
 
-- **Returns**: Log returns, rolling means, volatility, skewness, kurtosis, cumulative returns over configurable windows.
-- **Volatility proxies**: Rolling realised volatility, exponentially weighted volatility, jump indicators.
-- **Economic surprises**: Raw, normalised, absolute, and sign indicators using rolling means/standard deviations when explicit forecasts are unavailable.
-- **Regime markers**: VIX-based high/low volatility flags, moving-average-based bull/bear indicators, percentile ranks.
-- **Interaction terms**: Surprise × regime cross-products to study conditional sensitivities.
-- **Temporal features**: Day-of-week, month, quarter, year, weekend flags, and lagged variants for relevant columns.
+- Drop columns with >80% missing data
+- Cap heavy-tailed series at [1st, 99th] percentiles when z-outliers > 5%
+- Forward-fill economic indicators; drop fully empty rows
 
-Feature creation emphasises avoiding DataFrame fragmentation by constructing column dictionaries before concatenation, thereby maintaining performance on large panels.
+Metadata and summaries are written to `data/processed/quality_reports/` and `data/processed/data_metadata.json`.
 
-## Event Study Design
+## Feature engineering
 
-### Model
+Implemented in `src/preprocessing/feature_engineering.py`.
 
-The pipeline estimates a market-model baseline for each asset:
+1) Returns and distributional moments (per asset)
+	- Log returns and rolling descriptors over windows W ∈ {1, 5, 10, 20}
+	- Volatility, skewness, kurtosis, and cumulative returns
 
-\[
- r_{i,t} = \alpha_i + \beta_i m_t + \varepsilon_{i,t}
-\]
+2) Volatility proxies
+	- Realized volatility: $\sqrt{\operatorname{Var}_W(r) \cdot 252}$
+	- EWMA volatility with $\alpha = 2/(W+1)$, annualized
+	- Jump indicators: $\mathbb{1}(|r_t| > 3\,\hat{\sigma}_W)$
 
-where `m_t` is the chosen market factor (default: S&P 500 proxy). `EventStudyAnalyzer.estimate_normal_returns` falls back to heuristics if insufficient overlapping data exist, ensuring the pipeline still produces interpretable synthetic diagnostics.
+3) Economic “surprise” measures
+	- With forecasts: $S_t = A_t - E_t$, normalized by rolling $\sigma(S)$; also sign and |surprise|
+	- Without forecasts: expected value is 12-period rolling mean (lagged), same normalizations
 
-### Windows & Estimation
+4) Market regime indicators
+	- VIX-based high/low regimes and percentile ranks
+	- Trend regimes from S&P 500 200-day MA and a trend-strength gauge
 
-- **Estimation window**: up to 250 trading days (minimum adaptive threshold of ~30 valid observations).
-- **Event window**: configurable; default ±5 trading days around each event date.
-- **Event catalogue**: `MacroAnnouncementAnalysis._get_comprehensive_event_catalog()` enumerates critical macro, policy, geopolitical, and crisis events from 2015 onwards. Synthetic semi-annual events are generated when empirical overlaps are insufficient.
+5) Interactions and event flags
+	- Cross-products Surprise × Regime
+	- Optional event-window indicators: pre, event-day, and post (up to +3d)
 
-### Outputs
+Engineering avoids DataFrame fragmentation by accumulating columns in dictionaries and concatenating once.
 
-For each event and asset, the analyser computes:
+## Event study design
 
-- Abnormal returns (AR) and cumulative abnormal returns (CAR).
-- Significance statistics using residual standard errors and Student-t approximations.
-- Average abnormal returns across events grouped by relative day (AAR, ACAR).
-- Summary tables (mean, dispersion, hit ratios) exported via `PlotGenerator` to `results/tables/event_study/`.
-- Narrative report `results/event_study_detailed_report.md` documenting setup and key findings.
+### Model and parameters
 
-## Regression Framework
+For each asset i, a market model is estimated on a pre-event window:
 
-### Individual Asset Regressions
+$$ r_{i,t} = \alpha_i + \beta_i\, m_t + \varepsilon_{i,t} $$
 
-`RegressionAnalyzer.run_pooled_regression` (despite the name) currently performs two tasks:
+- Estimation window: up to 250 trading days; adaptive minimums in code (min ≥ 10–30 overlapping days).
+- Event window: ±D days around each announcement, default D = 5 (configurable; analyze module uses 1–7 in robustness checks).
+- Market proxy: `^GSPC` if available, otherwise the first valid return series.
+- Fallback: If overlap is insufficient, use defensive defaults (e.g., residual std > 0, conservative R²) to retain analyzability.
 
-1. **Asset-level regressions**: For a capped number of assets (default 5) it regresses daily returns on selected surprise measures and optional controls, using HC3 robust errors. Lagged dependent variables can be included for autocorrelation control.
-2. **Pooled crypto vs stock model**: Constructs a long-form panel with a `crypto_dummy` and interaction terms `surprise × crypto_dummy` to test sensitivity differences.
+### Abnormal performance and inference
 
-Model estimation is wrapped in defensive utilities (`safe_ols_fit`) to handle NaNs, infinite values, and unstable design matrices gracefully.
+- Abnormal return: $\operatorname{AR}_{i,t} = r_{i,t} - (\hat{\alpha}_i + \hat{\beta}_i m_t)$
+- Cumulative abnormal return over an event window T: $\operatorname{CAR}_{i,T} = \sum_{t\in T} \operatorname{AR}_{i,t}$
 
-### Volatility and Asymmetric Effects
+Tests use residual standard error from estimation with Student-t approximations:
 
-- `RegressionAnalyzer.return_volatility_regression` fits similar linear models to realised volatility series.
-- `RegressionAnalyzer.asymmetric_effects_analysis` splits samples into positive/negative surprises to test directional asymmetry.
-- `RegressionAnalyzer.regime_dependent_analysis` evaluates surprise impacts conditional on high/low volatility regimes or other binary markers.
+- Daily t-stat: $t_{i,t} = \operatorname{AR}_{i,t} / \widehat{\sigma}_{\varepsilon,i}$
+- Window t-stat: $t_{i,T} = \operatorname{CAR}_{i,T} / (\widehat{\sigma}_{\varepsilon,i}\, \sqrt{|T|})$, df ≈ $n_i-2$
 
-### Statistical Extensions
+Average profiles across events are computed as AAR/ACAR by aligning relative event time. Results and summaries are exported to `results/event_study_*.csv` and `results/event_study_detailed_report.md`.
 
-`ComprehensiveStatisticalAnalysis.run_complete_analysis` provides a low-complexity but informative snapshot:
+## Regression framework
 
-- Descriptive statistics for crypto and stock return distributions.
-- Simple volatility and mean comparison tests (Levene, t-tests) after outlier trimming.
-- Pairwise cross-asset correlations.
-- Aggregated hypothesis conclusions and significant findings with effect-size notes.
+### Individual asset regressions (limited scope)
 
-Outputs coalesce into `results/comprehensive_analysis_results.csv`, `hypothesis_test_results.csv`, and supporting tables under `results/tables/`.
+For up to 5 assets (to keep runs responsive), daily returns are regressed on selected surprise measures with robust errors:
 
-## Assumptions & Limitations
+$$ r_{i,t} = \alpha_i + \beta_{1,i}\,\text{Surprise}_t + \gamma_i' X_t + \varepsilon_{i,t} $$
 
-- **Data coverage**: Free APIs impose rate limits and occasionally return partial histories; the enhanced collector includes retries, alternative proxies, and synthesised results when real data are unavailable.
-- **Market proxy selection**: In absence of `^GSPC`, the first available return series acts as the market benchmark—documented in logs.
-- **Statistical power**: The pipeline enforces minimum observation thresholds (typically ≥10–30) before fitting models; otherwise it records fallbacks or synthetic outcomes.
-- **Heteroskedasticity/autocorrelation**: Robust HC3 errors and diagnostic statistics (Durbin-Watson, Breusch–Pagan) are attached to regression summaries; however, full HAC corrections are not yet implemented.
-- **Intraday analysis**: Infrastructure exists for intraday data (support for 1-minute intervals) but primary workflow operates on daily data due to public API constraints.
+- X may include the 1-lag of the dependent variable and optional controls if provided
+- Estimation via OLS with HC3 (heteroskedasticity-robust) covariance
+- Defensive cleaning: remove NaN/Inf, enforce minimum observations, avoid ill-conditioned designs
 
-## Extending the Methodology
+### Pooled crypto vs. stock sensitivity
 
-- **Custom event sets**: Supply your own list of `datetime` objects to `MacroAnnouncementAnalysis.run_event_study()` or modify the catalogue helper.
-- **Alternative factor models**: Replace the single-factor market model with multi-factor regressions by adjusting `estimate_normal_returns` and the expected return formula.
-- **Enhanced surprise calculations**: Inject forecaster consensus data into `FeatureEngineer.create_surprise_measures` to override rolling-average proxies.
-- **Advanced volatility models**: Integrate GARCH or realised volatility estimators in `FeatureEngineer` and extend `RegressionAnalyzer` accordingly.
+Long-form panel with a crypto dummy and interactions:
 
-By grounding the codebase in the methodology described above, the project offers a reproducible, extensible foundation for studying macro news effects across traditional and digital markets.
+$$ r_{i,t} = \alpha + \beta_1\,\text{Surprise}_t + \beta_2\,\text{Crypto}_i + \beta_3\,(\text{Surprise}_t\times\text{Crypto}_i) + \delta' X_t + \varepsilon_{i,t} $$
+
+- Tests whether crypto reacts differently to macro surprises ($\beta_3$)
+- HC3 standard errors; Durbin–Watson and Breusch–Pagan diagnostics recorded when applicable
+
+### Optional analyses available in code
+
+- Asymmetry: Split by positive vs negative surprises
+- Regime dependence: Estimate within high/low volatility or trend regimes
+- Return–volatility variants: Same structure on realized volatility series
+
+Summaries and serialized results are written to `results/comprehensive_analysis_results.csv` and companion tables under `results/tables/`.
+
+## Implementation details and outputs
+
+- Orchestration: `MacroAnnouncementAnalysis.run_full_analysis` calls collection → preprocessing → event study → regressions → reports
+- Reproducible artifacts:
+  - Data: `data/raw/*.csv`, `data/processed/aligned_data.csv`, metadata JSON, quality reports
+  - Event study: `results/event_study_results.csv`, `results/event_study_summary.csv`, detailed MD report
+  - Regression/statistics: `results/comprehensive_analysis_results.csv` (+ hypothesis summaries if available)
+  - Visual summaries: `results/tables/**` via `PlotGenerator`
+
+## Assumptions and limitations
+
+- Free data limits: intermittent gaps and partial histories; enhanced collector retries and uses fallbacks; some analyses may synthesize example outputs when data are insufficient (clearly flagged)
+- Benchmark proxy: falls back to the first valid return series when `^GSPC` is absent
+- Minimum sample sizes: enforced thresholds (≈10–30 obs) before estimation to avoid unreliable fits
+- Inference: HC3 robust errors are used; full HAC kernels and multi-factor market models are not enabled by default
+- Frequency: primary workflow uses daily prices and monthly macro; intraday support is not enabled in the public data path
+
+## Extending the methodology
+
+- Plug in your own event list to `MacroAnnouncementAnalysis.run_event_study()` or modify `_get_comprehensive_event_catalog`
+- Swap the market model for multi-factor variants by extending `estimate_normal_returns`
+- Provide survey forecasts to `FeatureEngineer.create_surprise_measures` for direct $A_t - E_t$ surprises
+- Add GARCH/realized-volatility models and richer controls to `RegressionAnalyzer`
+
+This methodology reflects the behaviour of the current codebase and is kept implementation-accurate for replication.
