@@ -1,6 +1,6 @@
 # Comprehensive Macro Announcement Effects Analysis - Executive Summary
 
-**Generated on:** 2025-09-28 12:49:45
+**Generated on:** 2025-09-29 14:23:03
 
 ## Executive Summary
 
@@ -11,13 +11,13 @@ This comprehensive research study analyzes the differential effects of macroecon
 
 ## Data Coverage and Quality
 
-- **Analysis Period:** 2015-10-01 to 2025-09-27
-- **Total Observations:** 3,650 trading days
-- **Variables Analyzed:** 3,451 time series
+- **Analysis Period:** 2020-09-01 to 2025-09-28
+- **Total Observations:** 1,854 trading days
+- **Variables Analyzed:** 3,421 time series
 - **Cryptocurrency Assets:** 160
 - **Stock Market Indices:** 192
 - **Economic Indicators:** 107
-- **Derived Variables:** 2626
+- **Derived Variables:** 2596
 
 ## Methodology Overview
 

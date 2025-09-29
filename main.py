@@ -185,16 +185,22 @@ class MacroAnnouncementAnalysis:
             Path(directory).mkdir(parents=True, exist_ok=True)
     
     def collect_data(self, start_date: str = None, end_date: str = None):
-        """Collect comprehensive 10-year data from all sources."""
+        """Collect comprehensive data from all sources."""
         self.logger.info("Starting Enhanced Data Collection...")
         
-        # Set default 10-year date range if not provided
+        # Get configured dates from config, or use defaults
         if not end_date:
-            end_date = datetime.now().strftime('%Y-%m-%d')
-        if not start_date:
-            start_date = (datetime.now() - timedelta(days=365*10)).strftime('%Y-%m-%d')  # 10 years
+            end_date = self.config.get('data_collection', {}).get('end_date')
+            if not end_date:
+                end_date = datetime.now().strftime('%Y-%m-%d')
         
-        self.logger.info(f"Enhanced date range (10 years): {start_date} to {end_date}")
+        if not start_date:
+            start_date = self.config.get('data_collection', {}).get('start_date')
+            if not start_date:
+                # Default to 5 years if not configured (avoids newer crypto missing data)
+                start_date = (datetime.now() - timedelta(days=365*5)).strftime('%Y-%m-%d')
+        
+        self.logger.info(f"Enhanced date range: {start_date} to {end_date}")
         
         try:
             # Use enhanced data collector
@@ -419,14 +425,24 @@ class MacroAnnouncementAnalysis:
         
         cleaned_data = data.copy()
         
-        # Remove columns with excessive missing data (>80%)
+        # Remove columns with excessive missing data (>50% for structural issues)
+        # Adjusted threshold from 80% to 50% to handle newer cryptocurrencies
         missing_analysis = quality_report.get('missing_data', {})
         missing_pct = missing_analysis.get('missing_percentage', {})
         
-        columns_to_drop = [col for col, pct in missing_pct.items() if pct > 80]
+        high_missing_threshold = 50  # More strict threshold for newer assets
+        columns_to_drop = [col for col, pct in missing_pct.items() if pct > high_missing_threshold]
+        
         if columns_to_drop:
-            self.logger.info(f"Dropping {len(columns_to_drop)} columns with >80% missing data")
+            self.logger.warning(f"Dropping {len(columns_to_drop)} columns with >{high_missing_threshold}% missing data")
+            self.logger.info(f"Columns dropped: {', '.join([col.split('_')[0] for col in columns_to_drop[:5]])}...")
             cleaned_data = cleaned_data.drop(columns=columns_to_drop)
+        
+        # Log moderate missing data (20-50%) as informational
+        moderate_missing = [(col, pct) for col, pct in missing_pct.items() 
+                           if 20 < pct <= high_missing_threshold and col in cleaned_data.columns]
+        if moderate_missing:
+            self.logger.info(f"{len(moderate_missing)} columns have 20-{high_missing_threshold}% missing data (kept but may indicate newer assets)")
         
         # Handle outliers based on quality analysis
         outlier_analysis = quality_report.get('outlier_detection', {})
@@ -714,6 +730,19 @@ class MacroAnnouncementAnalysis:
                 # Save comprehensive results
                 self._save_event_study_results(event_results)
                 
+                # Generate actual visualizations (PNG figures)
+                try:
+                    from src.visualization.visual_plot_generator import VisualPlotGenerator
+                    figures_dir = Path("results/figures")
+                    visual_gen = VisualPlotGenerator(figures_dir=str(figures_dir))
+                    self.logger.info("Generating event study visualizations...")
+                    visual_gen.plot_event_study_results(event_results)
+                    self.logger.info("✓ Event study visualizations completed and saved to results/figures/")
+                except Exception as viz_error:
+                    self.logger.error(f"Failed to generate event study visualizations: {viz_error}")
+                    import traceback
+                    traceback.print_exc()
+                
             else:
                 self.logger.error("Event study failed - insufficient suitable data")
                 
@@ -904,9 +933,31 @@ class MacroAnnouncementAnalysis:
             
             self.logger.info("Comprehensive analysis completed")
             
+            # Generate regression visualizations
+            self.logger.info("Generating regression analysis visualizations...")
+            if self.plot_generator and regression_results:
+                try:
+                    self.plot_generator.plot_regression_results(regression_results)
+                    self.logger.info("Regression visualizations completed")
+                except Exception as viz_error:
+                    self.logger.warning(f"Failed to generate regression visualizations: {viz_error}")
+            
             # Save comprehensive results
             self.logger.info("Saving comprehensive analysis results...")
             self._save_comprehensive_results(comprehensive_results)
+            
+            # Generate actual visualizations (PNG figures)
+            try:
+                from src.visualization.visual_plot_generator import VisualPlotGenerator
+                figures_dir = Path("results/figures")
+                visual_gen = VisualPlotGenerator(figures_dir=str(figures_dir))
+                self.logger.info("Generating regression visualizations...")
+                visual_gen.plot_regression_results(regression_results)
+                self.logger.info("✓ Regression visualizations completed and saved to results/figures/")
+            except Exception as viz_error:
+                self.logger.error(f"Failed to generate regression visualizations: {viz_error}")
+                import traceback
+                traceback.print_exc()
             
         except Exception as e:
             self.logger.error(f"Enhanced regression analysis failed: {e}")

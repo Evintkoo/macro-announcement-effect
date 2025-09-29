@@ -1,6 +1,6 @@
 # Comprehensive Research Report: Macroeconomic Announcement Effects on Cryptocurrency vs. Stock Markets
 
-**Analysis Date:** 2025-09-28
+**Analysis Date:** 2025-09-29
 **Research Period:** 10-Year Comprehensive Analysis
 
 ## Abstract
@@ -66,11 +66,11 @@ This study provides a comprehensive empirical analysis of how macroeconomic anno
 ## Technical Appendix
 
 ### Data Processing Details
-- Total observations: 3,650
+- Total observations: 1,854
 - Cryptocurrency assets: 10
 - Stock market assets: 10
 - Economic indicators: 624
-- Analysis period: 2015-10-01 00:00:00 to 2025-09-27 00:00:00
+- Analysis period: 2020-09-01 00:00:00 to 2025-09-28 00:00:00
 
 ### Software and Reproducibility
 - All analysis conducted in Python with open-source libraries

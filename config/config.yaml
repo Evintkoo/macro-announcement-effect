@@ -4,6 +4,15 @@ project:
   version: "1.0.0"
   description: "Research project analyzing the effect of macroeconomic announcements on cryptocurrency vs U.S. stock market returns, volatility, and trading volume"
 
+# Data Collection Configuration
+data_collection:
+  # Adjusted start date to avoid structural missing data for newer cryptocurrencies
+  # Start date: 2020-09-01 (when all major cryptocurrencies are available)
+  # This provides 5 years of complete data with minimal structural missingness
+  start_date: "2020-09-01"
+  # End date: defaults to current date if not specified
+  end_date: null
+
 # Data Sources Configuration
 data_sources:
   # Free FRED data (optional API key for higher limits)

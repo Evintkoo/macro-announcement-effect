@@ -9,6 +9,22 @@ A comprehensive research project analyzing the effects of macroeconomic announce
 3. **RQ3**: Are there asymmetric effects depending on surprise direction, magnitude, or market regime?
 4. **RQ4**: What is the timing and persistence of responses in both asset classes?
 
+## ✨ Key Features
+
+- **Comprehensive Data Collection**: Automated collection of 10 cryptocurrencies, major stock indices, and 20 economic indicators (all free sources)
+- **Advanced Feature Engineering**: Generates 3421+ features from 54 raw variables including:
+  - Returns (1d, 5d, 10d, 20d, 60d windows)
+  - Realized and exponential volatility measures
+  - Skewness and kurtosis
+  - Economic surprise indicators
+  - Market regime indicators
+  - Cross-asset interactions
+- **Robust Event Study Analysis**: Market model-based methodology with statistical significance testing
+- **Multiple Regression Specifications**: Pooled regressions, asymmetric effects, regime-dependent models
+- **Data Quality Assurance**: Automated quality reports, missing data analysis, and validation checks
+- **Publication-Ready Outputs**: LaTeX tables, high-quality figures, and comprehensive markdown reports
+- **Reproducible Research Pipeline**: Complete automation from data collection to final results
+
 ## 🏗️ Project Structure
 
 ```
@@ -53,6 +69,16 @@ CSV and JSON datasets are no longer tracked in the repository. Populate `data/ra
 
 ## 🚀 Quick Start
 
+### 📊 Data Quality Note
+
+**This project now uses optimized date range (2020-09-01 to present) to ensure complete cryptocurrency data.**
+
+- ✓ All major cryptocurrencies have >98% complete data
+- ✓ ~5 years of high-quality data for robust analysis
+- ✓ No structural missing data issues
+
+See [`DATA_QUALITY_FIX.md`](DATA_QUALITY_FIX.md) for details on the data quality improvements.
+
 ### Option 1: Automated Setup (Recommended)
 
 **Windows Users:**
@@ -85,13 +111,16 @@ pip install -r requirements.txt
 
 #### 2. Configuration
 
-```bash
-# Copy environment template (optional)
-cp .env.template .env
+The configuration file (`config/config.yaml`) is pre-configured with optimized settings:
 
-# Edit configuration if needed
-# Note: All data sources are free, no API keys required for basic functionality
+```yaml
+# config/config.yaml
+data_collection:
+  start_date: "2020-09-01"  # Optimized for complete crypto coverage
+  end_date: null  # Defaults to current date
 ```
+
+No API keys required for basic functionality - all data sources are free!
 
 #### 3. Run Analysis
 
@@ -140,10 +169,28 @@ python scripts/run_analysis.py
 
 ### Data Sources (All Free!)
 
-- **Stock Market Data**: Yahoo Finance (S&P 500, VIX, Treasury rates)
-- **Cryptocurrency Data**: CoinGecko public API (Bitcoin, Ethereum)
-- **Economic Data**: FRED via pandas-datareader (unemployment, inflation, GDP)
-- **Announcement Dates**: Web scraping from Federal Reserve and BLS websites
+**Coverage Period**: September 2020 - Present (~5 years of high-quality data)
+
+- **Cryptocurrency Data** (10 assets via Yahoo Finance):
+  - Major coins: Bitcoin (BTC), Ethereum (ETH), BNB, Cardano (ADA), XRP
+  - DeFi/Layer-1: Solana (SOL), Polkadot (DOT), Avalanche (AVAX), Polygon (MATIC)
+  - DeFi infrastructure: Chainlink (LINK)
+  
+- **Stock Market Data** (Yahoo Finance):
+  - US indices: S&P 500, Dow Jones, NASDAQ, Russell 2000
+  - Volatility: VIX
+  - Fixed income: Treasury rates (10Y, 2Y), TLT
+  - Commodities: Gold (GLD)
+  - Crypto-related stocks
+  
+- **Economic Data** (20 indicators via FRED):
+  - Employment: Unemployment rate, nonfarm payrolls, jobless claims
+  - Inflation: CPI, core CPI, PPI
+  - Growth: GDP, industrial production, retail sales
+  - Monetary policy: Federal funds rate, EFFR
+  - Market indicators: Consumer confidence, housing starts
+  
+> **Note**: The date range (2020-09-01 onwards) is optimized to ensure complete data coverage for all cryptocurrencies, as newer tokens like Polkadot and Avalanche launched in mid-2020. See [`DATA_QUALITY_FIX.md`](DATA_QUALITY_FIX.md) for methodology details.
 
 ### Statistical Methods
 
@@ -271,6 +318,13 @@ Based on the methodology, the analysis will produce:
    - Crypto vs stock market response patterns
    - Volatility effects
    - Cross-asset correlations during announcement periods
+
+## 📁 Additional Documentation
+
+- **[`DATA_QUALITY_FIX.md`](DATA_QUALITY_FIX.md)**: Comprehensive documentation of data quality improvements and the rationale for the 2020-09-01 start date
+- **[`DATA_QUALITY_FIX_RESULTS.md`](DATA_QUALITY_FIX_RESULTS.md)**: Before/after validation results showing improvement from 21-49% missing data to <2%
+- **[`QUICK_START.md`](QUICK_START.md)**: Step-by-step guide for first-time users
+- **[`docs/`](docs/)**: Detailed documentation on methodology, pipeline, and output artifacts
 
 ## 🤝 Contributing
 
