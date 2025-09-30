@@ -1,6 +1,6 @@
 
 # Enhanced Analysis Summary Report
-Generated: 2025-09-29 14:35:05
+Generated: 2025-09-30 13:07:43
 
 ## 1. Statistical Significance Overview
 - Total series analyzed: 564
@@ -81,6 +81,47 @@ fixed_income_Treasury_10Y_Yield_cumret_1d -0.029613 -0.045180     -0.396911
 2. **Asymmetry**: Notable asymmetry in positive vs negative event responses across categories
 3. **Risk Characteristics**: Diverse risk profiles across asset classes with varying tail risk exposure
 4. **Regime Dependency**: Evidence of regime-dependent behavior in volatility and correlation patterns
+
+## Output Files
+All results have been saved to `D:\Works\Researchs\macro-announcement-effect\notebooks\final_results/`
+
+### Plots Generated:
+1. Top Mean CAR Effects (bar chart)
+2. Event Study Dispersion (scatter plot)
+3. Mean CAR by Category (box plot)
+4. Cumulative Returns Snapshot (line chart)
+5. Correlation Matrix (heatmap)
+6. Rolling Correlation vs SP500
+7. Significance Rate by Category
+8. Event Asymmetry (scatter plot)
+9. Distribution Analysis (histograms)
+10. Q-Q Plots
+11. Category Violin Plot
+12. Rolling Volatility
+13. VaR Comparison
+14. Cross-Correlation (SP500 vs VIX)
+15. Dynamic Correlation
+16. CAR by Event Window (if available)
+17. Regime Detection
+18. Risk-Adjusted Performance
+
+### Tables Generated:
+1. Category Summary
+2. Correlation Matrix
+3. Rolling Correlation Data
+4. Significance Summary
+5. Top Significant Results
+6. Significance by Category
+7. Asymmetric Series
+8. Normality Tests
+9. Category Detailed Statistics
+10. Rolling Volatility Data
+11. Risk Metrics
+12. Cross-Correlation Data
+13. Event Window Analysis (if available)
+14. Regime Distribution
+15. Regime Statistics
+16. Performance Metrics
 
 ---
 *For detailed methodology and complete results, refer to the full analysis pipeline outputs.*
