@@ -147,7 +147,7 @@ class RegressionAnalyzer:
         
         if stock_assets is None:
             stock_assets = [col for col in returns_data.columns 
-                          if any(stock_name in col.upper() for stock_name in ['^GSPC', 'SPY', '^VIX', '^TNX', 'DX-Y', 'GSPC', 'VIX', 'TNX'])]
+                          if any(stock_name in col.upper() for stock_name in ['^GSPC', 'SPY', '^TNX', 'DX-Y', 'GSPC', 'TNX'])]
         
         # Further limit assets for individual regressions
         crypto_assets = crypto_assets[:max_assets_to_analyze]

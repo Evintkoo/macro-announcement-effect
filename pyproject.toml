@@ -1,9 +1,72 @@
 [project]
 name = "macro-announcement-effect"
-version = "0.1.0"
-description = "Add your description here"
+version = "1.0.0"
+description = "Research project analyzing the effect of macroeconomic announcements on cryptocurrency vs U.S. stock market returns, volatility, and trading volume"
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = [
-    "pycoingecko>=3.2.0",
+authors = [
+    { name = "Research Team" }
 ]
+keywords = ["finance", "cryptocurrency", "macroeconomics", "event-study", "research"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Topic :: Office/Business :: Financial",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+# P1 FIX: Consolidated all dependencies from requirements.txt
+# Removed unused pycoingecko (code uses yfinance for crypto data)
+dependencies = [
+    # Core data science libraries
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.3.0",
+    
+    # Free financial data libraries (actually used in codebase)
+    "yfinance>=0.2.0",
+    "pandas-datareader>=0.10.0",
+    "fredapi>=0.5.0",
+    
+    # Data collection utilities
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+    
+    # Statistical analysis
+    "statsmodels>=0.14.0",
+    "arch>=6.0.0",
+    
+    # Visualization
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "plotly>=5.15.0",
+    
+    # Configuration and utilities
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0.0",
+    "tqdm>=4.65.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+]
+notebook = [
+    "jupyter>=1.0.0",
+    "ipykernel>=6.25.0",
+]
+docs = [
+    "sphinx>=7.0.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["src"]

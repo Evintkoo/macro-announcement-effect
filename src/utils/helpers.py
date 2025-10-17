@@ -9,6 +9,21 @@ from datetime import datetime, timezone
 import logging
 from pathlib import Path
 
+def get_timezone_policy() -> str:
+    """
+    Get timezone policy from config or return default.
+    
+    Returns:
+        Timezone policy: 'naive' or 'UTC'
+    """
+    try:
+        from utils.config import Config
+        config = Config()
+        return config.get('analysis', {}).get('timezone_policy', 'naive')
+    except ImportError:
+        # Fallback to naive if config not available
+        return 'naive'
+
 def setup_logging(log_level: str = "INFO", log_file: str = None) -> logging.Logger:
     """
     Set up logging configuration.
@@ -43,16 +58,22 @@ def setup_logging(log_level: str = "INFO", log_file: str = None) -> logging.Logg
     
     return logging.getLogger(__name__)
 
-def ensure_datetime_index(df: pd.DataFrame, datetime_col: str = None) -> pd.DataFrame:
+def ensure_datetime_index(df: pd.DataFrame, datetime_col: str = None, timezone_policy: str = 'naive') -> pd.DataFrame:
     """
-    Ensure DataFrame has a datetime index.
+    Ensure DataFrame has a datetime index with consistent timezone handling.
     
     Args:
         df: DataFrame to process
         datetime_col: Column name to use as datetime index (if not already index)
+        timezone_policy: 'naive' for tz-naive (default, recommended for daily data)
+                        'UTC' for UTC-aware timestamps (for intraday when supported)
         
     Returns:
-        DataFrame with datetime index
+        DataFrame with datetime index following specified timezone policy
+        
+    Notes:
+        - 'naive' is recommended for daily pipelines to avoid alignment issues across sources
+        - 'UTC' should only be used when all data sources support timezone-aware timestamps
     """
     df = df.copy()
     
@@ -62,9 +83,19 @@ def ensure_datetime_index(df: pd.DataFrame, datetime_col: str = None) -> pd.Data
     elif not isinstance(df.index, pd.DatetimeIndex):
         df.index = pd.to_datetime(df.index)
     
-    # Ensure timezone awareness
-    if df.index.tz is None:
-        df.index = df.index.tz_localize('UTC')
+    # Apply timezone policy (P0 FIX)
+    if timezone_policy == 'naive':
+        # Ensure timezone-naive for cross-source compatibility
+        if df.index.tz is not None:
+            df.index = df.index.tz_localize(None)
+    elif timezone_policy == 'UTC':
+        # Ensure UTC-aware for intraday analysis
+        if df.index.tz is None:
+            df.index = df.index.tz_localize('UTC')
+        elif df.index.tz != pd.Timezone('UTC'):
+            df.index = df.index.tz_convert('UTC')
+    else:
+        raise ValueError(f"timezone_policy must be 'naive' or 'UTC', got '{timezone_policy}'")
     
     return df
 

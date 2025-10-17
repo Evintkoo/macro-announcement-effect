@@ -18,12 +18,13 @@ def setup_enhanced_logging():
     try:
         import sys
         from pathlib import Path
-        # Add project root to path
+        # Add project root src to path
         project_root = Path(__file__).parent.parent.parent
-        if str(project_root) not in sys.path:
-            sys.path.insert(0, str(project_root))
+        src_path = project_root / "src"
+        if str(src_path) not in sys.path:
+            sys.path.insert(0, str(src_path))
         
-        from src.utils.logging_config import ComponentLogger
+        from utils.logging_config import ComponentLogger
         component_logger = ComponentLogger()
         return component_logger.get_preprocessing_logger("INFO")
     except ImportError as e:
@@ -49,14 +50,13 @@ class FeatureEngineer:
         try:
             import sys
             from pathlib import Path
-            # Try different import approaches
-            try:
-                from src.utils.logging_config import EnhancedLogger
-            except ImportError:
-                # Alternative path
-                project_root = Path(__file__).parent.parent.parent
-                sys.path.insert(0, str(project_root / "src"))
-                from utils.logging_config import EnhancedLogger
+            # Ensure src is on path
+            project_root = Path(__file__).parent.parent.parent
+            src_path = project_root / "src"
+            if str(src_path) not in sys.path:
+                sys.path.insert(0, str(src_path))
+            
+            from utils.logging_config import EnhancedLogger
             
             enhanced_logger = EnhancedLogger(f"{__name__}.FeatureEngineer")
             
@@ -187,9 +187,35 @@ class FeatureEngineer:
         return surprises
     
     def _create_surprise_from_historical(self, actual_data: pd.DataFrame) -> pd.DataFrame:
-        """Create surprises using historical mean as expected value."""
+        """
+        Create surprises using historical mean as expected value.
+        
+        P1 WARNING: This is a PROXY surprise based on historical rolling mean, 
+        not actual forecast data. For publication-grade analysis, use real 
+        forecast-based surprises (Bloomberg/Refinitiv/WSJ consensus).
+        
+        Columns are prefixed with 'proxy_surprise_' to indicate methodology limitation.
+        """
         # Use dictionary to collect all features, then create DataFrame once
         all_surprises = {}
+        
+        # Check config for marking policy
+        try:
+            from utils.config import Config
+            config = Config()
+            mark_proxy = config.get('analysis', {}).get('mark_proxy_surprises', True)
+        except:
+            mark_proxy = True  # Default to marking
+        
+        # Set prefix based on marking policy
+        prefix = "proxy_surprise_" if mark_proxy else ""
+        
+        if mark_proxy:
+            self.logger.warning(
+                "Creating PROXY surprises from historical means. "
+                "These are NOT forecast-based surprises. "
+                "Results should be clearly labeled as using proxy methodology."
+            )
         
         for col in actual_data.columns:
             series = actual_data[col].dropna()
@@ -202,20 +228,21 @@ class FeatureEngineer:
             
             # Reindex to match the original dataframe index
             raw_surprise_reindexed = raw_surprise.reindex(actual_data.index)
-            all_surprises[f"{col}_surprise"] = raw_surprise_reindexed
+            # P1 FIX: Mark as proxy surprise
+            all_surprises[f"{prefix}{col}_surprise"] = raw_surprise_reindexed
             
             # Normalized surprise
             surprise_std = raw_surprise.rolling(window=12, min_periods=1).std()
             normalized_surprise = raw_surprise / surprise_std
-            all_surprises[f"{col}_normalized_surprise"] = normalized_surprise.reindex(actual_data.index)
+            all_surprises[f"{prefix}{col}_normalized_surprise"] = normalized_surprise.reindex(actual_data.index)
             
             # Sign indicator (use reindexed series)
             sign_indicator = np.where(raw_surprise_reindexed > 0, 1,
                                     np.where(raw_surprise_reindexed < 0, -1, 0))
-            all_surprises[f"{col}_sign"] = pd.Series(sign_indicator, index=actual_data.index)
+            all_surprises[f"{prefix}{col}_sign"] = pd.Series(sign_indicator, index=actual_data.index)
             
             # Absolute surprise
-            all_surprises[f"{col}_abs_surprise"] = np.abs(raw_surprise_reindexed)
+            all_surprises[f"{prefix}{col}_abs_surprise"] = np.abs(raw_surprise_reindexed)
         
         # Create DataFrame efficiently from dictionary
         surprises = pd.DataFrame(all_surprises, index=actual_data.index)
@@ -308,31 +335,20 @@ class FeatureEngineer:
     def create_market_regime_features(
         self,
         market_data: pd.DataFrame,
-        vix_threshold: float = 20.0
+        volatility_threshold: float = 0.015
     ) -> pd.DataFrame:
         """
-        Create market regime indicators.
+        Create market regime indicators based on market volatility and trends.
         
         Args:
-            market_data: DataFrame with market data (should include VIX)
-            vix_threshold: Threshold for high/low volatility regime
+            market_data: DataFrame with market data
+            volatility_threshold: Threshold for high/low volatility regime (daily return std)
             
         Returns:
             DataFrame with regime features
         """
         # Use dictionary to collect all features, then create DataFrame once
         all_features = {}
-        
-        # VIX-based regime
-        if any('vix' in col.lower() for col in market_data.columns):
-            vix_col = [col for col in market_data.columns if 'vix' in col.lower()][0]
-            vix_data = market_data[vix_col]
-            
-            all_features['high_vix_regime'] = (vix_data > vix_threshold).astype(int)
-            all_features['low_vix_regime'] = (vix_data <= vix_threshold).astype(int)
-            
-            # VIX percentile
-            all_features['vix_percentile'] = vix_data.rolling(252).rank(pct=True)
         
         # Market trend regime (using S&P 500 if available)
         sp500_cols = [col for col in market_data.columns 
@@ -341,6 +357,17 @@ class FeatureEngineer:
         if sp500_cols:
             sp500_col = sp500_cols[0]
             sp500_prices = market_data[sp500_col]
+            
+            # Calculate returns for volatility regime
+            sp500_returns = np.log(sp500_prices / sp500_prices.shift(1))
+            rolling_vol = sp500_returns.rolling(20).std()
+            
+            # Volatility-based regime (using realized volatility instead of VIX)
+            all_features['high_volatility_regime'] = (rolling_vol > volatility_threshold).astype(int)
+            all_features['low_volatility_regime'] = (rolling_vol <= volatility_threshold).astype(int)
+            
+            # Volatility percentile
+            all_features['volatility_percentile'] = rolling_vol.rolling(252).rank(pct=True)
             
             # Bull/bear market based on 200-day MA
             ma_200 = sp500_prices.rolling(200).mean()
@@ -401,41 +428,60 @@ class FeatureEngineer:
         Create event window indicators.
         
         Args:
-            data: DataFrame with time series data
+            data: DataFrame with time series data (must have DatetimeIndex)
             event_times: List of event times
             pre_window: Days before event
             post_window: Days after event
             
         Returns:
             DataFrame with event window indicators
+            
+        Note:
+            P1 FIX: Properly normalizes dates for comparison to avoid timezone/time-of-day issues
         """
         features = pd.DataFrame(index=data.index, columns=[
             'pre_event', 'event_day', 'post_event_1d', 'post_event_2d', 'post_event_3d'
         ], data=0)
         
+        # P1 FIX: Normalize data index to date-only for daily comparison
+        # This avoids issues when comparing event_time.date() to a DatetimeIndex
+        if isinstance(data.index, pd.DatetimeIndex):
+            normalized_index = data.index.normalize()  # Set all times to midnight
+        else:
+            normalized_index = pd.DatetimeIndex(data.index)
+        
         for event_time in event_times:
-            event_date = event_time.date() if hasattr(event_time, 'date') else event_time
+            # Convert event_time to normalized datetime
+            if hasattr(event_time, 'date'):
+                event_date = pd.Timestamp(event_time.date())
+            else:
+                event_date = pd.Timestamp(event_time)
+            event_date = event_date.normalize()  # Ensure midnight
             
             # Pre-event window
             for i in range(1, pre_window + 1):
                 pre_date = event_date - pd.Timedelta(days=i)
-                if pre_date in data.index:
-                    features.loc[pre_date, 'pre_event'] = 1
+                # Use normalized index for comparison
+                mask = normalized_index == pre_date
+                if mask.any():
+                    features.loc[mask, 'pre_event'] = 1
             
             # Event day
-            if event_date in data.index:
-                features.loc[event_date, 'event_day'] = 1
+            mask = normalized_index == event_date
+            if mask.any():
+                features.loc[mask, 'event_day'] = 1
             
             # Post-event windows
             for i in range(1, post_window + 1):
                 post_date = event_date + pd.Timedelta(days=i)
-                if post_date in data.index:
+                mask = normalized_index == post_date
+                if mask.any():
                     if i == 1:
-                        features.loc[post_date, 'post_event_1d'] = 1
+                        features.loc[mask, 'post_event_1d'] = 1
                     elif i == 2:
-                        features.loc[post_date, 'post_event_2d'] = 1
+                        features.loc[mask, 'post_event_2d'] = 1
                     elif i == 3:
-                        features.loc[post_date, 'post_event_3d'] = 1
+                        features.loc[mask, 'post_event_3d'] = 1
         
         return features
     

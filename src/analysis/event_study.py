@@ -24,8 +24,25 @@ logger = logging.getLogger(__name__)
 class EventStudyAnalyzer:
     """Event study analysis implementation following the research methodology."""
     
-    def __init__(self):
+    def __init__(self, allow_synthetic: bool = None):
+        """
+        Initialize EventStudyAnalyzer.
+        
+        Args:
+            allow_synthetic: Whether to allow synthetic fallback results.
+                           If None, reads from config. Default is False.
+        """
         self.logger = logging.getLogger(f"{__name__}.EventStudyAnalyzer")
+        
+        # Determine synthetic policy
+        if allow_synthetic is None:
+            allow_synthetic = config.get('analysis', {}).get('allow_synthetic', False)
+        self.allow_synthetic = allow_synthetic
+        
+        if not self.allow_synthetic:
+            self.logger.info("Synthetic data generation is DISABLED - will fail fast on insufficient data")
+        else:
+            self.logger.warning("Synthetic data generation is ENABLED - results may include synthetic fallbacks")
     
     def estimate_normal_returns(
         self,
@@ -399,9 +416,18 @@ class EventStudyAnalyzer:
         self.logger.info(f"Selected price columns: {price_columns}")
         
         if not price_columns:
-            self.logger.warning("No suitable price columns found, generating synthetic data for analysis")
-            # Create synthetic data for demonstration purposes
-            return self._create_synthetic_event_study_results()
+            if not self.allow_synthetic:
+                error_msg = (
+                    "No suitable price columns found in aligned data. "
+                    "Event study requires at least one asset with sufficient price data (>100 observations). "
+                    "To allow synthetic fallback results, set analysis.allow_synthetic=true in config.yaml"
+                )
+                self.logger.error(error_msg)
+                raise ValueError(error_msg)
+            else:
+                self.logger.warning("No suitable price columns found, generating synthetic data for analysis")
+                # Create synthetic data for demonstration purposes (ONLY when explicitly allowed)
+                return self._create_synthetic_event_study_results()
         
         # Calculate returns from prices
         returns_dict = {}
@@ -424,8 +450,17 @@ class EventStudyAnalyzer:
                 valid_return_columns.append(col)
         
         if not valid_return_columns:
-            self.logger.warning("No columns with sufficient return data, generating synthetic results")
-            return self._create_synthetic_event_study_results()
+            if not self.allow_synthetic:
+                error_msg = (
+                    "No columns with sufficient return data (>20 observations required). "
+                    "Cannot proceed with event study analysis. "
+                    "To allow synthetic fallback results, set analysis.allow_synthetic=true in config.yaml"
+                )
+                self.logger.error(error_msg)
+                raise ValueError(error_msg)
+            else:
+                self.logger.warning("No columns with sufficient return data, generating synthetic results")
+                return self._create_synthetic_event_study_results()
         
         returns_data = returns_data[valid_return_columns]
         self.logger.info(f"Valid return columns: {valid_return_columns}")
@@ -444,8 +479,18 @@ class EventStudyAnalyzer:
         self.logger.info(f"Using {market_proxy_col} as market proxy with {len(market_returns)} observations")
         
         if len(market_returns) < 20:  # Lower threshold
-            self.logger.warning(f"Insufficient market return data: {len(market_returns)} observations, generating synthetic results")
-            return self._create_synthetic_event_study_results()
+            if not self.allow_synthetic:
+                error_msg = (
+                    f"Insufficient market return data: {len(market_returns)} observations (minimum 20 required). "
+                    f"Market proxy used: {market_proxy_col}. "
+                    "Cannot proceed with event study analysis. "
+                    "To allow synthetic fallback results, set analysis.allow_synthetic=true in config.yaml"
+                )
+                self.logger.error(error_msg)
+                raise ValueError(error_msg)
+            else:
+                self.logger.warning(f"Insufficient market return data: {len(market_returns)} observations, generating synthetic results")
+                return self._create_synthetic_event_study_results()
         
         # Run full event study
         results = self.run_full_event_study(
@@ -518,7 +563,16 @@ class EventStudyAnalyzer:
             'average_abnormal_returns': average_ars,
             'average_cumulative_abnormal_returns': average_cars,
             'event_windows': event_windows,
-            'summary_statistics': self._calculate_summary_statistics(abnormal_returns, cars)
+            'summary_statistics': self._calculate_summary_statistics(abnormal_returns, cars),
+            # Provenance metadata for real results
+            'provenance': {
+                'is_synthetic': False,
+                'generation_timestamp': pd.Timestamp.now().isoformat(),
+                'n_events': len(event_windows),
+                'n_assets': len(returns_data.columns),
+                'estimation_window': estimation_window,
+                'event_window_days': event_window_days
+            }
         }
         
         self.logger.info("Event study analysis completed")
@@ -559,9 +613,17 @@ class EventStudyAnalyzer:
         return summary
     
     def _create_synthetic_event_study_results(self) -> Dict[str, any]:
-        """Create synthetic event study results for demonstration when real data is insufficient."""
+        """
+        Create synthetic event study results for demonstration when real data is insufficient.
         
-        self.logger.info("Creating synthetic event study results due to insufficient data")
+        WARNING: This method should only be called when allow_synthetic=True.
+        All outputs are tagged with provenance metadata indicating synthetic origin.
+        """
+        
+        self.logger.warning("=" * 80)
+        self.logger.warning("CREATING SYNTHETIC EVENT STUDY RESULTS")
+        self.logger.warning("These results are NOT based on real data and should NOT be used for research claims")
+        self.logger.warning("=" * 80)
         
         # Create synthetic data for demonstration
         np.random.seed(42)  # For reproducibility
@@ -621,11 +683,20 @@ class EventStudyAnalyzer:
                 }
             },
             'data_source': 'synthetic',
-            'note': 'Results are synthetic due to insufficient real data for event study analysis'
+            'note': 'Results are synthetic due to insufficient real data for event study analysis',
+            # Provenance metadata (P0 requirement)
+            'provenance': {
+                'is_synthetic': True,
+                'generation_timestamp': pd.Timestamp.now().isoformat(),
+                'reason': 'Insufficient real data for event study analysis',
+                'warning': 'DO NOT USE FOR RESEARCH CLAIMS - For demonstration purposes only'
+            }
         }
         
         # Create cumulative abnormal returns from abnormal returns
         for event_name, ar_data in synthetic_results['abnormal_returns'].items():
             synthetic_results['cumulative_abnormal_returns'][event_name] = ar_data.cumsum()
+        
+        self.logger.warning("Synthetic results generated. Check 'provenance' field for metadata.")
         
         return synthetic_results

@@ -15,7 +15,7 @@ src_path = Path(__file__).parent.parent
 sys.path.insert(0, str(src_path))
 
 from utils.config import Config
-from utils.helpers import calculate_returns, calculate_realized_volatility, synchronize_timestamps
+from utils.helpers import calculate_returns, calculate_realized_volatility, synchronize_timestamps, ensure_datetime_index, get_timezone_policy
 
 # Global config instance
 config = Config()
@@ -203,14 +203,24 @@ class DataPreprocessor:
         return analysis_data
     
     def _ensure_datetime_index(self, data: pd.DataFrame) -> pd.DataFrame:
-        """Ensure DataFrame has datetime index."""
-        if not isinstance(data.index, pd.DatetimeIndex):
-            try:
-                data.index = pd.to_datetime(data.index)
-            except:
-                self.logger.warning("Could not convert index to datetime")
+        """
+        Ensure DataFrame has datetime index with consistent timezone handling.
         
-        return data
+        Uses centralized timezone policy from config to maintain consistency
+        across all data sources (P0 FIX).
+        """
+        try:
+            timezone_policy = get_timezone_policy()
+            return ensure_datetime_index(data, timezone_policy=timezone_policy)
+        except Exception as e:
+            self.logger.warning(f"Could not ensure datetime index: {e}")
+            # Fallback to basic datetime conversion
+            if not isinstance(data.index, pd.DatetimeIndex):
+                try:
+                    data.index = pd.to_datetime(data.index)
+                except:
+                    pass
+            return data
     
     def _add_announcement_indicators(
         self,
@@ -272,7 +282,7 @@ class DataPreprocessor:
         # Add lags for return and volatility columns
         lag_columns = [col for col in data.columns 
                       if any(keyword in col.lower() 
-                            for keyword in ['return', 'volatility', 'vix', 'rate'])]
+                            for keyword in ['return', 'volatility', 'rate'])]
         
         for col in lag_columns:
             for lag in lags:

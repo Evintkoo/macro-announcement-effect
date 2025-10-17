@@ -133,8 +133,17 @@ class VisualPlotGenerator:
             fig, axes = plt.subplots(2, 1, figsize=(14, 10))
             
             # Separate crypto and stock columns
-            crypto_cols = [col for col in aar_data.columns if 'crypto' in col.lower() or 'btc' in col.lower()]
-            stock_cols = [col for col in aar_data.columns if 'stock' in col.lower() or 'spy' in col.lower() or 'nasdaq' in col.lower()]
+            # Get crypto symbols from config
+            try:
+                from utils.config import Config
+                config = Config()
+                crypto_symbols = config.get('data_sources.crypto.symbols', [])
+                crypto_tickers = [s.replace('-USD', '').replace('-', '_').lower() for s in crypto_symbols]
+            except:
+                crypto_tickers = ['btc', 'eth', 'bnb', 'xrp', 'ada', 'sol', 'doge', 'matic', 'dot', 'avax']
+            
+            crypto_cols = [col for col in aar_data.columns if any(ticker in col.lower() for ticker in crypto_tickers) or 'crypto' in col.lower()]
+            stock_cols = [col for col in aar_data.columns if 'stock' in col.lower() or 'spy' in col.lower() or 'nasdaq' in col.lower() or col not in crypto_cols]
             
             # Plot 1: Crypto AAR
             if crypto_cols:
@@ -176,8 +185,17 @@ class VisualPlotGenerator:
             fig, axes = plt.subplots(2, 1, figsize=(14, 10))
             
             # Separate crypto and stock columns
-            crypto_cols = [col for col in car_data.columns if 'crypto' in col.lower() or 'btc' in col.lower()]
-            stock_cols = [col for col in car_data.columns if 'stock' in col.lower() or 'spy' in col.lower() or 'nasdaq' in col.lower()]
+            # Get crypto symbols from config
+            try:
+                from utils.config import Config
+                config = Config()
+                crypto_symbols = config.get('data_sources.crypto.symbols', [])
+                crypto_tickers = [s.replace('-USD', '').replace('-', '_').lower() for s in crypto_symbols]
+            except:
+                crypto_tickers = ['btc', 'eth', 'bnb', 'xrp', 'ada', 'sol', 'doge', 'matic', 'dot', 'avax']
+            
+            crypto_cols = [col for col in car_data.columns if any(ticker in col.lower() for ticker in crypto_tickers) or 'crypto' in col.lower()]
+            stock_cols = [col for col in car_data.columns if 'stock' in col.lower() or 'spy' in col.lower() or 'nasdaq' in col.lower() or col not in crypto_cols]
             
             # Plot 1: Crypto CAR
             if crypto_cols:
@@ -214,28 +232,60 @@ class VisualPlotGenerator:
             self.logger.warning(f"Failed to plot CAR: {e}")
     
     def _plot_car_by_asset_type(self, car_dict: Dict[str, pd.DataFrame], save_dir: Path) -> None:
-        """Plot CAR comparison between crypto and stocks"""
+        """
+        Plot CAR comparison between crypto and stocks.
+        
+        P0 FIX: Classify by column names (asset tickers), not event keys.
+        car_dict structure: {'event_1': DataFrame(columns=[assets], index=[dates]), ...}
+        """
         try:
-            # Calculate average CAR for crypto vs stocks
-            crypto_cars = []
-            stock_cars = []
+            # Get crypto symbols from config
+            try:
+                from utils.config import Config
+                config = Config()
+                crypto_symbols = config.get('data_sources.crypto.symbols', [])
+                crypto_tickers = [s.replace('-USD', '').replace('-', '_').lower() for s in crypto_symbols]
+            except:
+                crypto_tickers = ['btc', 'eth', 'bnb', 'xrp', 'ada', 'sol', 'doge', 'matic', 'dot', 'avax']
             
-            for asset_name, car_df in car_dict.items():
-                if isinstance(car_df, pd.DataFrame) and not car_df.empty:
-                    if 'crypto' in asset_name.lower() or 'btc' in asset_name.lower():
-                        crypto_cars.append(car_df.mean(axis=1))
-                    elif 'stock' in asset_name.lower() or 'spy' in asset_name.lower():
-                        stock_cars.append(car_df.mean(axis=1))
+            # Stock market indicators
+            stock_indicators = ['^gspc', '^dji', '^ixic', '^rut', 'spy', 'qqq', 'dia', 'iwm', 
+                              'xlf', 'xlk', 'xle', 'xlv', 'xli', 'aapl', 'msft', 'googl', 
+                              'amzn', 'tsla', 'jpm', 'bac', 'gs']
             
-            if not crypto_cars and not stock_cars:
+            # P0 FIX: Collect CARs by classifying COLUMN names (assets), not event keys
+            crypto_car_series = []
+            stock_car_series = []
+            
+            for event_name, car_df in car_dict.items():
+                if not isinstance(car_df, pd.DataFrame) or car_df.empty:
+                    continue
+                
+                # Iterate through columns (assets) in this event's DataFrame
+                for col in car_df.columns:
+                    col_lower = col.lower().replace('-', '_')
+                    
+                    # Classify as crypto
+                    if any(ticker in col_lower for ticker in crypto_tickers):
+                        crypto_car_series.append(car_df[col])
+                    # Classify as stock
+                    elif any(indicator in col_lower for indicator in stock_indicators):
+                        stock_car_series.append(car_df[col])
+                    # Default: if contains USD but not in crypto list, likely stock/forex
+                    elif 'usd' not in col_lower:
+                        stock_car_series.append(car_df[col])
+            
+            # P0 FIX: Use the correct variable names (crypto_car_series, not crypto_cars)
+            if not crypto_car_series and not stock_car_series:
+                self.logger.warning("No crypto or stock CAR data found for comparison plot")
                 return
             
             fig, ax = plt.subplots(figsize=(12, 7))
             
             # Plot average CAR with confidence bands
-            if crypto_cars:
-                crypto_avg = pd.concat(crypto_cars, axis=1).mean(axis=1)
-                crypto_std = pd.concat(crypto_cars, axis=1).std(axis=1)
+            if crypto_car_series:
+                crypto_avg = pd.concat(crypto_car_series, axis=1).mean(axis=1)
+                crypto_std = pd.concat(crypto_car_series, axis=1).std(axis=1)
                 ax.plot(crypto_avg.index, crypto_avg, color=self.colors['crypto'], 
                        linewidth=3, label='Cryptocurrency (Average)', alpha=0.9)
                 ax.fill_between(crypto_avg.index, 
@@ -243,9 +293,9 @@ class VisualPlotGenerator:
                                crypto_avg + 1.96*crypto_std,
                                color=self.colors['crypto'], alpha=0.2)
             
-            if stock_cars:
-                stock_avg = pd.concat(stock_cars, axis=1).mean(axis=1)
-                stock_std = pd.concat(stock_cars, axis=1).std(axis=1)
+            if stock_car_series:
+                stock_avg = pd.concat(stock_car_series, axis=1).mean(axis=1)
+                stock_std = pd.concat(stock_car_series, axis=1).std(axis=1)
                 ax.plot(stock_avg.index, stock_avg, color=self.colors['stocks'], 
                        linewidth=3, label='Stock Markets (Average)', alpha=0.9)
                 ax.fill_between(stock_avg.index, 
@@ -274,14 +324,18 @@ class VisualPlotGenerator:
             self.logger.warning(f"Failed to plot CAR comparison: {e}")
     
     def _plot_significance_heatmap(self, significance_tests: Dict, save_dir: Path) -> None:
-        """Plot heatmap of significance tests"""
+        """Plot heatmap of significance tests (P0 FIX: corrected p-value extraction)"""
         try:
             # Convert to DataFrame for plotting
             rows = []
             for event, assets in significance_tests.items():
                 for asset, tests in assets.items():
                     if isinstance(tests, dict):
-                        p_value = tests.get('p_value', tests.get('t_test', {}).get('p_value', np.nan))
+                        # P0 FIX: Event study stores 'car_p_value' not 'p_value'
+                        # Check multiple possible locations for p-value
+                        p_value = tests.get('car_p_value',  # Primary location
+                                  tests.get('p_value',       # Fallback 1
+                                  tests.get('t_test', {}).get('p_value', np.nan)))  # Fallback 2
                         rows.append({
                             'event': event[:30],
                             'asset': asset[:30],
@@ -289,9 +343,17 @@ class VisualPlotGenerator:
                         })
             
             if not rows:
+                self.logger.warning("No significance test results found for heatmap")
                 return
             
             df = pd.DataFrame(rows)
+            # Filter out rows with NaN p-values
+            df = df.dropna(subset=['p_value'])
+            
+            if df.empty:
+                self.logger.warning("No valid p-values found for heatmap")
+                return
+            
             pivot = df.pivot(index='asset', columns='event', values='p_value')
             
             # Create heatmap
@@ -321,6 +383,15 @@ class VisualPlotGenerator:
     def _plot_return_distributions(self, ar_dict: Dict[str, pd.DataFrame], save_dir: Path) -> None:
         """Plot distribution comparison of abnormal returns"""
         try:
+            # Get crypto symbols from config
+            try:
+                from utils.config import Config
+                config = Config()
+                crypto_symbols = config.get('data_sources.crypto.symbols', [])
+                crypto_tickers = [s.replace('-USD', '').replace('-', '_').lower() for s in crypto_symbols]
+            except:
+                crypto_tickers = ['btc', 'eth', 'bnb', 'xrp', 'ada', 'sol', 'doge', 'matic', 'dot', 'avax']
+            
             # Collect returns
             crypto_returns = []
             stock_returns = []
@@ -330,9 +401,9 @@ class VisualPlotGenerator:
                     returns = ar_df.values.flatten()
                     returns = returns[~np.isnan(returns)]
                     
-                    if 'crypto' in asset_name.lower() or 'btc' in asset_name.lower():
+                    if any(ticker in asset_name.lower() for ticker in crypto_tickers) or 'crypto' in asset_name.lower():
                         crypto_returns.extend(returns)
-                    elif 'stock' in asset_name.lower() or 'spy' in asset_name.lower():
+                    elif 'stock' in asset_name.lower() or 'spy' in asset_name.lower() or 's&p' in asset_name.lower():
                         stock_returns.extend(returns)
             
             if not crypto_returns and not stock_returns:

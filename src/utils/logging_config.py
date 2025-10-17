@@ -323,4 +323,4 @@ if __name__ == "__main__":
     data_logger.info("Data collection started")
     analysis_logger.info("Analysis phase started")
     
-    print("Logging test completed. Check logs/ directory for output files.")
+    logger.info("Logging test completed. Check logs/ directory for output files.")

@@ -162,9 +162,6 @@ class EnhancedDataCollector(BaseDataCollector):
             'IWM': 'IWM_ETF',   # iShares Russell 2000
             'VTI': 'VTI_ETF',   # Vanguard Total Stock Market
             
-            # Volatility
-            '^VIX': 'VIX',     # CBOE Volatility Index
-            
             # Currency
             'DX=F': 'DXY',     # US Dollar Index
             
@@ -190,19 +187,24 @@ class EnhancedDataCollector(BaseDataCollector):
     def _collect_crypto_data_enhanced(self, start_date: str, end_date: str) -> pd.DataFrame:
         """Enhanced crypto data collection."""
         
-        # Major cryptocurrencies
-        crypto_symbols = {
-            'BTC-USD': 'Bitcoin',
-            'ETH-USD': 'Ethereum', 
-            'BNB-USD': 'Binance_Coin',
-            'XRP-USD': 'Ripple',
-            'ADA-USD': 'Cardano',
-            'SOL-USD': 'Solana',
-            'DOT-USD': 'Polkadot',
-            'AVAX-USD': 'Avalanche',
-            'MATIC-USD': 'Polygon',
-            'LINK-USD': 'Chainlink'
-        }
+        # Load config to get crypto symbols
+        try:
+            from utils.config import Config
+            config = Config()
+            crypto_symbols_list = config.get('data_sources.crypto.symbols', [])
+        except Exception as e:
+            self.logger.warning(f"Failed to load crypto symbols from config: {e}, using defaults")
+            crypto_symbols_list = [
+                'BTC-USD', 'ETH-USD', 'BNB-USD', 'XRP-USD', 'ADA-USD',
+                'SOL-USD', 'DOGE-USD', 'MATIC-USD', 'DOT-USD', 'AVAX-USD'
+            ]
+        
+        # Create mapping of symbols to clean names
+        crypto_symbols = {}
+        for symbol in crypto_symbols_list:
+            # Clean name from symbol (remove -USD suffix and format)
+            clean_name = symbol.replace('-USD', '').replace('-', '_')
+            crypto_symbols[symbol] = clean_name
         
         all_data = pd.DataFrame()
         
@@ -328,11 +330,8 @@ class EnhancedDataCollector(BaseDataCollector):
         """Collect volatility and options data."""
         
         volatility_symbols = {
-            '^VIX': 'VIX_Index',
-            '^VXN': 'NASDAQ_Volatility',  
-            # '^RVX': 'Russell_Volatility',  # Removed - causing delisted errors
-            'VXX': 'VIX_ETN',
-            'UVXY': 'Ultra_VIX_Short_Term'
+            '^VXN': 'NASDAQ_Volatility'  
+            # VIX and VIX-related products removed from analysis
         }
         
         all_data = pd.DataFrame()

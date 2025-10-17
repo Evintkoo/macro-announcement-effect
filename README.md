@@ -2,7 +2,31 @@
 
 A comprehensive research project analyzing the effects of macroeconomic announcements on cryptocurrency and U.S. stock market returns, volatility, and trading volume.
 
-## 📋 Research Questions
+## � Project Status & Issue Tracking
+
+**Current Status:** Draft under revision (October 16, 2025)
+
+**Comprehensive review completed** identifying 32 issues across paper and codebase:
+
+📄 **For Paper Issues & Fixes:**
+- **[QUICK_FIXES.md](./QUICK_FIXES.md)** - Start here! Top 5 critical issues with immediate actions
+- **[PAPER_FIXES_PLAN.md](./PAPER_FIXES_PLAN.md)** - Complete 32-issue plan with detailed solutions
+- **[ISSUES_SUMMARY.md](./ISSUES_SUMMARY.md)** - Executive summary with timelines and progress tracking
+
+🔨 **For Code Issues:**
+- **[plan.md](./plan.md)** - Technical code issues and pipeline fixes
+
+**Priority Breakdown:**
+- 🔴 P0 Critical: 8 issues (5 paper + 3 code) - Blocking scientific validity
+- 🟡 P1 High: 10 issues (5 paper + 5 code) - Required for publication quality
+- 🟢 P2-P3: 14 issues - Polish and completeness
+
+**Estimated Timeline:**
+- P0 fixes: 2-3 days full-time
+- Publication-ready: 2 weeks full-time
+- Complete polish: 4 weeks full-time
+
+## �📋 Research Questions
 
 1. **RQ1**: What is the effect of major U.S. macroeconomic announcements on returns, volatility, and trading volume of major cryptocurrencies?
 2. **RQ2**: How do these effects compare to their impacts on the U.S. stock market?
@@ -33,8 +57,8 @@ macro-announcement-effect/
 │   ├── data_collection/          # Data collection modules
 │   │   ├── base_collector.py     # Base data collector class
 │   │   ├── yahoo_finance_collector.py  # Yahoo Finance data (free)
-│   │   ├── crypto_collector.py   # Cryptocurrency data (CoinGecko free API)
-│   │   └── economic_data_collector.py  # Economic indicators
+│   │   ├── crypto_collector.py   # Cryptocurrency data via Yahoo Finance
+│   │   └── economic_data_collector.py  # Economic indicators via FRED
 │   ├── preprocessing/            # Data preprocessing
 │   │   ├── data_preprocessor.py  # Data cleaning and preparation
 │   │   └── feature_engineering.py # Feature creation
@@ -63,9 +87,16 @@ macro-announcement-effect/
 └── README.md                     # This file
 ```
 
-### 🗃️ Data Files
+### 🗃️ Data Files and Sources
 
-CSV and JSON datasets are no longer tracked in the repository. Populate `data/raw/` with your own source files (for example exports from the collectors) and keep any derived files under `data/processed/`; both locations are automatically ignored by Git. If you need to version a lightweight sample dataset, compress it or convert it to a different format (e.g., `.parquet`) before committing.
+**Data Sources** (P1 FIX - corrected documentation):
+- **Cryptocurrency Data**: Yahoo Finance (`yfinance` library) - provides free historical data for major cryptocurrencies
+- **Stock Market Data**: Yahoo Finance - S&P 500, NASDAQ, Dow Jones, and individual stocks
+- **Economic Indicators**: FRED (Federal Reserve Economic Data) via `pandas-datareader` - free access to macroeconomic time series
+- **Event Catalog**: Externalized to `config/events/macroeconomic_events.csv` for easy maintenance and transparency
+
+**Data Storage**:
+CSV and JSON datasets are tracked in the repository for reproducibility (see `data/raw/` and `data/processed/`). The `.gitignore` is configured to exclude large intermediate files while keeping core datasets versioned.
 
 ## 🚀 Quick Start
 
@@ -77,19 +108,13 @@ CSV and JSON datasets are no longer tracked in the repository. Populate `data/ra
 - ✓ ~5 years of high-quality data for robust analysis
 - ✓ No structural missing data issues
 
-See [`DATA_QUALITY_FIX.md`](DATA_QUALITY_FIX.md) for details on the data quality improvements.
+For more details on data quality and methodology, see [`docs/methodology.md`](docs/methodology.md).
 
 ### Option 1: Automated Setup (Recommended)
 
-**Windows Users:**
-```batch
-# Double-click run_analysis.bat or run in PowerShell:
-.\run_analysis.ps1
-```
-
-**Linux/Mac Users:**
 ```bash
-python run_analysis.py
+# Run the main analysis pipeline
+python main.py
 ```
 
 ### Option 2: Manual Setup
@@ -219,6 +244,15 @@ Surprise_t = A_t - E_t
 Normalized Surprise_t = (A_t - E_t) / σ(E_t)
 ```
 
+**⚠️ IMPORTANT METHODOLOGICAL NOTE** (P1 FIX):
+
+By default, this project uses **proxy surprises** based on historical rolling means when forecast data is unavailable:
+- Columns prefixed with `proxy_surprise_` indicate historical-mean-based surprises
+- These are NOT forecast-based surprises (Bloomberg/Refinitiv consensus)
+- For publication-grade research, real forecast data should be integrated
+- See `config.yaml` → `analysis.mark_proxy_surprises` to control labeling
+- See `docs/methodology.md` for detailed discussion of limitations
+
 ### Key Features
 
 - **Automated Data Collection**: Free APIs for all data sources
@@ -255,14 +289,23 @@ The project uses a YAML configuration file (`config/config.yaml`) to manage:
 - Statistical test configurations
 - Output preferences
 
-Key configuration sections:
+Key configuration sections (P0/P1 fixes applied):
 ```yaml
 data_sources:
   yahoo_finance:     # Free stock market data
-  coingecko:         # Free crypto data
-  economic_calendar: # Free announcement dates
+  fred:              # Free economic data (via FRED)
+  crypto:            # Cryptocurrency data (via Yahoo Finance)
 
 analysis:
+  # P0 FIX: Synthetic data policy
+  allow_synthetic: false  # When false, fail fast on insufficient data
+  
+  # P0 FIX: Timezone handling
+  timezone_policy: 'naive'  # Use tz-naive for daily data alignment
+  
+  # P1 FIX: Surprise methodology transparency
+  mark_proxy_surprises: true  # Prefix proxy-based surprises
+  
   event_windows:     # Event study windows
   returns:           # Return calculation methods
   volatility:        # Volatility estimation
@@ -271,6 +314,8 @@ statistics:
   significance_level: 0.05
   bootstrap_iterations: 1000
 ```
+
+See `config/events/macroeconomic_events.csv` for the externalized event catalog (P1 fix).
 
 ## 📝 Usage Examples
 
@@ -340,9 +385,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Federal Reserve Economic Data (FRED)
-- Yahoo Finance for market data
-- CoinGecko for cryptocurrency data
+- Federal Reserve Economic Data (FRED) for macroeconomic indicators
+- Yahoo Finance for market and cryptocurrency data
 - Research methodology based on established event study and regression techniques
 
 ## 📞 Contact

@@ -165,7 +165,6 @@ class YahooFinanceCollector(BaseDataCollector):
             # Fallback to default symbols
             symbols = [
                 "^GSPC",    # S&P 500
-                "^VIX",     # VIX
                 "^TNX",     # 10-Year Treasury
                 "^DJI",     # Dow Jones
                 "^IXIC",    # NASDAQ

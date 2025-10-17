@@ -22,9 +22,13 @@ import numpy as np
 import json
 from pathlib import Path
 
+# Add src to path for imports first
+project_root = Path(__file__).parent
+sys.path.insert(0, str(project_root / "src"))
+
 # Suppress statsmodels warnings
 try:
-    from src.utils.warnings_suppression import *
+    from utils.warnings_suppression import *
 except ImportError:
     import warnings
     warnings.filterwarnings('ignore', category=RuntimeWarning, 
@@ -305,8 +309,11 @@ class MacroAnnouncementAnalysis:
         # Collect cryptocurrency data
         self.logger.info("Collecting cryptocurrency data...")
         crypto_collector = CryptoCollector()
+        crypto_symbols = self.config.get('data_sources.crypto.symbols', 
+                                        ['BTC-USD', 'ETH-USD', 'BNB-USD', 'XRP-USD', 'ADA-USD',
+                                         'SOL-USD', 'DOGE-USD', 'MATIC-USD', 'DOT-USD', 'AVAX-USD'])
         self.crypto_data = crypto_collector.collect_data(
-            symbols=['BTC-USD', 'ETH-USD'],
+            symbols=crypto_symbols,
             start_date=start_date,
             end_date=end_date
         )
@@ -732,7 +739,7 @@ class MacroAnnouncementAnalysis:
                 
                 # Generate actual visualizations (PNG figures)
                 try:
-                    from src.visualization.visual_plot_generator import VisualPlotGenerator
+                    from visualization.visual_plot_generator import VisualPlotGenerator
                     figures_dir = Path("results/figures")
                     visual_gen = VisualPlotGenerator(figures_dir=str(figures_dir))
                     self.logger.info("Generating event study visualizations...")
@@ -751,73 +758,53 @@ class MacroAnnouncementAnalysis:
             traceback.print_exc()
     
     def _get_comprehensive_event_catalog(self) -> List[Dict[str, str]]:
-        """Get comprehensive catalog of major economic events for 10-year period."""
+        """
+        Get comprehensive catalog of major economic events.
         
-        events = [
-            # 2015 Events
-            {'date': '2015-12-16', 'type': 'monetary_policy', 'description': 'Fed raises rates for first time since 2006'},
-            {'date': '2015-08-11', 'type': 'international', 'description': 'China devalues yuan'},
-            {'date': '2015-01-22', 'type': 'monetary_policy', 'description': 'ECB launches QE program'},
-            
-            # 2016 Events  
-            {'date': '2016-06-23', 'type': 'political', 'description': 'Brexit referendum'},
-            {'date': '2016-11-08', 'type': 'political', 'description': 'Trump elected US President'},
-            {'date': '2016-01-20', 'type': 'international', 'description': 'Oil prices hit 12-year low'},
-            {'date': '2016-12-14', 'type': 'monetary_policy', 'description': 'Fed raises rates to 0.5-0.75%'},
-            
-            # 2017 Events
-            {'date': '2017-06-14', 'type': 'monetary_policy', 'description': 'Fed raises rates to 1-1.25%'},
-            {'date': '2017-12-13', 'type': 'monetary_policy', 'description': 'Fed raises rates to 1.25-1.5%'},
-            {'date': '2017-12-22', 'type': 'fiscal_policy', 'description': 'Trump tax cuts signed into law'},
-            
-            # 2018 Events
-            {'date': '2018-03-21', 'type': 'monetary_policy', 'description': 'Fed raises rates to 1.5-1.75%'},
-            {'date': '2018-06-13', 'type': 'monetary_policy', 'description': 'Fed raises rates to 1.75-2%'},
-            {'date': '2018-09-26', 'type': 'monetary_policy', 'description': 'Fed raises rates to 2-2.25%'},
-            {'date': '2018-12-19', 'type': 'monetary_policy', 'description': 'Fed raises rates to 2.25-2.5%'},
-            {'date': '2018-03-22', 'type': 'trade_policy', 'description': 'Trump announces China tariffs'},
-            
-            # 2019 Events
-            {'date': '2019-07-31', 'type': 'monetary_policy', 'description': 'Fed cuts rates to 2-2.25%'},
-            {'date': '2019-09-18', 'type': 'monetary_policy', 'description': 'Fed cuts rates to 1.75-2%'},
-            {'date': '2019-10-30', 'type': 'monetary_policy', 'description': 'Fed cuts rates to 1.5-1.75%'},
-            
-            # 2020 Events (Major Crisis Year)
-            {'date': '2020-03-03', 'type': 'monetary_policy', 'description': 'Emergency Fed rate cut to 1-1.25%'},
-            {'date': '2020-03-15', 'type': 'monetary_policy', 'description': 'Emergency Fed rate cut to 0-0.25%'},
-            {'date': '2020-03-23', 'type': 'monetary_policy', 'description': 'Fed announces unlimited QE'},
-            {'date': '2020-03-27', 'type': 'fiscal_policy', 'description': 'CARES Act signed ($2.2T stimulus)'},
-            {'date': '2020-11-07', 'type': 'political', 'description': 'Biden declared winner of 2020 election'},
-            {'date': '2020-11-09', 'type': 'health', 'description': 'Pfizer announces 90% effective vaccine'},
-            
-            # 2021 Events
-            {'date': '2021-11-03', 'type': 'monetary_policy', 'description': 'Fed announces QE tapering'},
-            {'date': '2021-03-11', 'type': 'fiscal_policy', 'description': 'American Rescue Plan Act signed'},
-            {'date': '2021-11-15', 'type': 'fiscal_policy', 'description': 'Infrastructure Investment Act signed'},
-            
-            # 2022 Events (Inflation Fighting)
-            {'date': '2022-03-16', 'type': 'monetary_policy', 'description': 'Fed raises rates to 0.25-0.5%'},
-            {'date': '2022-05-04', 'type': 'monetary_policy', 'description': 'Fed raises rates to 0.75-1%'},
-            {'date': '2022-06-15', 'type': 'monetary_policy', 'description': 'Fed raises rates to 1.5-1.75%'},
-            {'date': '2022-07-27', 'type': 'monetary_policy', 'description': 'Fed raises rates to 2.25-2.5%'},
-            {'date': '2022-09-21', 'type': 'monetary_policy', 'description': 'Fed raises rates to 3-3.25%'},
-            {'date': '2022-11-02', 'type': 'monetary_policy', 'description': 'Fed raises rates to 3.75-4%'},
-            {'date': '2022-12-14', 'type': 'monetary_policy', 'description': 'Fed raises rates to 4.25-4.5%'},
-            {'date': '2022-02-24', 'type': 'geopolitical', 'description': 'Russia invades Ukraine'},
-            
-            # 2023 Events
-            {'date': '2023-02-01', 'type': 'monetary_policy', 'description': 'Fed raises rates to 4.5-4.75%'},
-            {'date': '2023-03-22', 'type': 'monetary_policy', 'description': 'Fed raises rates to 4.75-5%'},
-            {'date': '2023-05-03', 'type': 'monetary_policy', 'description': 'Fed raises rates to 5-5.25%'},
-            {'date': '2023-07-26', 'type': 'monetary_policy', 'description': 'Fed raises rates to 5.25-5.5%'},
-            {'date': '2023-03-12', 'type': 'financial', 'description': 'Silicon Valley Bank failure'},
-            
-            # 2024 Events
-            {'date': '2024-09-18', 'type': 'monetary_policy', 'description': 'Fed cuts rates to 4.75-5%'},
-            {'date': '2024-11-07', 'type': 'monetary_policy', 'description': 'Fed cuts rates to 4.5-4.75%'}
-        ]
+        P1 FIX: Now loads from external CSV file instead of hardcoded list.
+        Events are filtered by config start/end dates.
         
-        return events
+        Returns:
+            List of event dictionaries with date, type, description, and source
+        """
+        try:
+            # Load events from CSV (P1 FIX: externalized to config/events/)
+            events_file = Path('config/events/macroeconomic_events.csv')
+            
+            if not events_file.exists():
+                self.logger.warning(f"Event catalog not found: {events_file}. Using fallback synthetic events.")
+                return []
+            
+            # Read events CSV
+            events_df = pd.read_csv(events_file)
+            events_df['date'] = pd.to_datetime(events_df['date'])
+            
+            # Filter by config date range
+            start_date = pd.Timestamp(self.config.get('data_collection.start_date', '2020-09-01'))
+            end_date = pd.Timestamp(self.config.get('data_collection.end_date', pd.Timestamp.now()))
+            
+            filtered_events = events_df[
+                (events_df['date'] >= start_date) & 
+                (events_df['date'] <= end_date)
+            ]
+            
+            self.logger.info(
+                f"Loaded {len(filtered_events)} events from {events_file} "
+                f"(filtered from {len(events_df)} total events by date range {start_date.date()} to {end_date.date()})"
+            )
+            
+            # Convert to list of dicts
+            events = filtered_events.to_dict('records')
+            # Convert date back to string for compatibility
+            for event in events:
+                event['date'] = event['date'].strftime('%Y-%m-%d')
+            
+            return events
+            
+        except Exception as e:
+            self.logger.error(f"Failed to load event catalog: {e}")
+            self.logger.info("Falling back to empty event list")
+            return []
     
     def _generate_synthetic_events(self) -> List[pd.Timestamp]:
         """Generate synthetic event dates for analysis when real events aren't available."""
@@ -948,7 +935,7 @@ class MacroAnnouncementAnalysis:
             
             # Generate actual visualizations (PNG figures)
             try:
-                from src.visualization.visual_plot_generator import VisualPlotGenerator
+                from visualization.visual_plot_generator import VisualPlotGenerator
                 figures_dir = Path("results/figures")
                 visual_gen = VisualPlotGenerator(figures_dir=str(figures_dir))
                 self.logger.info("Generating regression visualizations...")
